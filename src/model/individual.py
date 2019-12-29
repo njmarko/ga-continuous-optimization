@@ -1,5 +1,5 @@
 from random import random
-
+from src.functions.functions import ackley, griewank, michalewicz
 
 class Individual(object):
 
@@ -26,6 +26,21 @@ class Individual(object):
 
     def get_num_of_genes(self):
         return len(self._genes)
+
+    def calc_fitness(self, fnc):
+        self._fitness = fnc(self._genes)
+        return self._fitness
+
+    # Optional
+    def calc_fitness_ackley(self):
+        return self.calc_fitness(ackley)
+
+    def calc_fitness_griewank(self):
+        return self.calc_fitness(griewank)
+
+    def calc_fitness_michalewicz(self):
+        return self.calc_fitness(michalewicz)
+    # -----------
 
     def __str__(self):
         return str(self._genes)
