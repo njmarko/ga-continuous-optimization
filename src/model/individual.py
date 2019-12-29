@@ -73,7 +73,10 @@ class Individual(object):
     # -----------
 
     # lower_bound je devijacija u gausu
-    def mutation(self, mutation_rate=2, method="Gauss", lower_bound=5, upper_bound=6):
+    def mutation(self, chance=0.03, mutation_rate=2, method="gauss", lower_bound=5, upper_bound=6):
+        if random() > chance:
+            return self._genes
+
         gene_len = self.gene_length()
         if mutation_rate > gene_len:
             mutation_rate = gene_len
