@@ -1,6 +1,5 @@
 from src.model.individual import Individual
-from random import random, randint
-from copy import deepcopy
+from random import random, randint, sample
 from math import ceil
 
 
@@ -68,7 +67,7 @@ class Population(object):
     def separate_elites(self, percentage=5):
         self.sort_individuals()
         num = ceil(percentage / 100 * self.get_population_size())
-        if num <2:
+        if num < 2:
             num = 2
         for i in range(num):
             self._elites.append(self._individuals.pop(0))
@@ -98,6 +97,7 @@ class Population(object):
     #     return var.index(chance)
 
     def selection(self, method='Fittest Half', elitism=True):
+        self.sort_individuals()
         if elitism:
             self.separate_elites()
         self.calculate_fitness()
@@ -142,17 +142,20 @@ class Population(object):
                 self._individuals += children
         elif method == 'Random':
             for i in range(0, max_num, 2):
-                chosen = random.sample(range(0, self.get_population_size()), 2)
+                chosen = sample(range(0, self.get_population_size()), 2)
                 children = self._individuals[chosen[0]].crossover(self._individuals[chosen[1]])
                 self._individuals.append(children)
         self.calculate_fitness()
         self.sort_individuals()
 
-    def mutations(self, method='Gauss', elitism=True):
+    def mutations(self, percentage=50, method='Gauss', elitism=True):
         if elitism:
             self.separate_elites()
-        for ind in self._individuals:
-            ind.mutation()
+        num = ceil(percentage / 100 * self.get_population_size())
+        positions = sample(range(0, self.get_population_size()), num)
+        for i in range(len(positions)):
+            pos = positions[i]
+            self._individuals[pos].mutation()
         self._individuals = self._elites + self._individuals
         self.sort_individuals()
         self._elites = []
@@ -160,5 +163,5 @@ class Population(object):
     def __str__(self):
         string = ""
         for ind in self._individuals:
-            string += " Fitness: " + str(ind.get_fitness()) + " " + str(ind) + "\n"
+            string += str(ind) + "\n"
         return string

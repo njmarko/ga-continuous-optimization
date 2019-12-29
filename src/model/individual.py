@@ -1,4 +1,4 @@
-from random import random, randint, gauss
+from random import random, randint, gauss, sample
 
 from src.functions.functions import ackley, griewank, michalewicz
 
@@ -73,23 +73,18 @@ class Individual(object):
     # -----------
 
     # lower_bound je devijacija u gausu
-    def mutation(self, chance=0.03, mutation_rate=2, method="gauss", lower_bound=5, upper_bound=6):
+    def mutation(self, chance=1, mutation_rate=2, method="Gauss", lower_bound=5, upper_bound=6):
         if random() > chance:
             return self._genes
 
         gene_len = self.gene_length()
         if mutation_rate > gene_len:
             mutation_rate = gene_len
-        rand_id = []
-        while len(rand_id) < mutation_rate:
-            rand = randint(0, gene_len - 1)
-            if rand not in rand_id:
-                rand_id.append(rand)
-
+        rand_id = sample(range(0, gene_len), mutation_rate)
         if method == "Gauss":
             for i in rand_id:
                 self._genes[i] = \
-                    self._genes[i] + gauss(0, lower_bound)
+                    self._genes[i] + gauss(0, 1)
 
         elif method == "Random":
             for i in rand_id:
@@ -97,7 +92,7 @@ class Individual(object):
 
         return self._genes
 
-    def crossover(self, other, method="One Point"):
+    def crossover(self, other, method="Two point"):
         size = self.gene_length()
         genes1 = []
         genes2 = []
@@ -106,10 +101,10 @@ class Individual(object):
             if size == 1:
                 method = "One point"
             else:
-                point1 = randint(0, size)
-                point2 = randint(0, size)
-                while point1 == point2:
-                    point2 = randint(0, size)
+                positions = sorted(sample(range(0, size), 2))
+
+                point1 = positions[0]
+                point2 = positions[1]
 
                 genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:point2] + self.get_genes()[point2:]
                 genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:point2] + other.get_genes()[point2:]
@@ -119,7 +114,6 @@ class Individual(object):
 
             genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:]
             genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:]
-            print("more")
 
         elif method == "Random":
             for i, j in zip(self.get_genes(), other.get_genes()):
@@ -134,4 +128,4 @@ class Individual(object):
                                                                                           self._upper_bound, genes2)
 
     def __str__(self):
-        return str(self._genes)
+        return "Fitness: " + str(self._fitness) + " " + str(self._genes)
