@@ -1,4 +1,4 @@
-from math import sqrt,exp,cos,pi
+from math import sqrt,exp, sin, cos,pi,pow
 
 
 def ackley(axis):
@@ -23,4 +23,14 @@ def griewank(axis):
         product1 *= cos(x/sqrt(i))
 
     ans = sum1 - product1 + 1
+    return ans
+
+
+def michalewicz(axis):
+    sum1 = 0
+
+    for i,x in enumerate(axis):
+        sum1 += sin(x)
+
+    ans = -sum1 * pow(sin((i*x*x)/pi), 20)
     return ans
