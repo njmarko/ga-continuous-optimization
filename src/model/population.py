@@ -1,6 +1,7 @@
 from src.model.individual import Individual
 from random import random, randint
 from copy import deepcopy
+from math import ceil
 
 
 class Population(object):
@@ -64,11 +65,16 @@ class Population(object):
         self.calculate_fitness()
         self._individuals = sorted(self._individuals)
 
-    def separate_elites(self):
+    def separate_elites(self, percentage=5):
         self.sort_individuals()
-        self._elites.append(self._individuals.pop(0))
+        num = ceil(percentage / 100 * self.get_population_size())
+        if num <2:
+            num = 2
+        for i in range(num):
+            self._elites.append(self._individuals.pop(0))
 
     def calculate_fitness(self):
+        self._fitness = []
         for i in range(self.get_population_size()):
             self._fitness.append(self._individuals[i].calc_fitness(self._function))
 
@@ -125,20 +131,22 @@ class Population(object):
         selected.calculate_fitness()
         return selected
 
-    def pairing(self, method='Fittest'):
+    def pairing(self, method='Fittest', crossover="Two point"):
         self._individuals += self._elites
+        max_num = self.get_population_size() - len(self._elites)
         self._elites = []
         self.sort_individuals()
         if method == 'Fittest':
-            for i in range(0, self.get_population_size(), 2):
+            for i in range(0, max_num, 2):
                 children = self._individuals[i].crossover(self._individuals[i + 1])
                 self._individuals += children
         elif method == 'Random':
-            for i in range(0, self.get_population_size(), 2):
+            for i in range(0, max_num, 2):
                 chosen = random.sample(range(0, self.get_population_size()), 2)
                 children = self._individuals[chosen[0]].crossover(self._individuals[chosen[1]])
                 self._individuals.append(children)
         self.calculate_fitness()
+        self.sort_individuals()
 
     def mutations(self, method='Gauss', elitism=True):
         if elitism:

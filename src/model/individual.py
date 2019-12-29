@@ -99,9 +99,9 @@ class Individual(object):
         genes1 = []
         genes2 = []
 
-        if method == "two point":
+        if method == "Two point":
             if size == 1:
-                method = "one point"
+                method = "One point"
             else:
                 point1 = randint(0, size)
                 point2 = randint(0, size)
@@ -111,14 +111,14 @@ class Individual(object):
                 genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:point2] + self.get_genes()[point2:]
                 genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:point2] + other.get_genes()[point2:]
 
-        if method == "one point":
+        if method == "One point":
             point1 = randint(0, size - 1)
 
             genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:]
             genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:]
             print("more")
 
-        elif method == "random":
+        elif method == "Random":
             for i, j in zip(self.get_genes(), other.get_genes()):
                 if random() > 0.5:
                     genes1.append(i)
