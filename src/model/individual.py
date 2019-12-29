@@ -5,10 +5,13 @@ from src.functions.functions import ackley, griewank, michalewicz
 
 class Individual(object):
 
-    def __init__(self, num_genes, lower_bound, upper_bound):
+    def __init__(self, num_genes, lower_bound, upper_bound, genes=None):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
-        self._genes = self.make_genes(num_genes)
+        if genes:
+            self._genes = genes
+        else:
+            self._genes = self.make_genes(num_genes)
         self._fitness = None
 
     def make_genes(self, num_genes):
@@ -16,6 +19,24 @@ class Individual(object):
         for i in range(num_genes):
             genes.append(random() * (self._upper_bound - self._lower_bound) + self._lower_bound)
         return genes
+
+    def __eq__(self, other):
+        return self._fitness == other.get_fitness()
+
+    def __ge__(self, other):
+        return self._fitness >= other.get_fitness()
+
+    def __le__(self, other):
+        return self._fitness <= other.get_fitness()
+
+    def __lt__(self, other):
+        return self._fitness < other.get_fitness()
+
+    def __gt__(self, other):
+        return self._fitness > other.get_fitness()
+
+    def get_fitness(self):
+        return self._fitness
 
     def get_genes(self):
         return self._genes
@@ -51,11 +72,10 @@ class Individual(object):
 
     # -----------
 
-    # lower_bond je devijacija u gausu
-    def mutation(self, mutation_rate=2, method="gauss", lower_bond=5, upper_bond=6):
+    # lower_bound je devijacija u gausu
+    def mutation(self, mutation_rate=2, method="Gauss", lower_bound=5, upper_bound=6):
         gene_len = self.gene_length()
         if mutation_rate > gene_len:
-            print("ee")
             mutation_rate = gene_len
         rand_id = []
         while len(rand_id) < mutation_rate:
@@ -63,21 +83,19 @@ class Individual(object):
             if rand not in rand_id:
                 rand_id.append(rand)
 
-        if method == "gauss":
+        if method == "Gauss":
             for i in rand_id:
                 self._genes[i] = \
-                    self._genes[i] + gauss(0, lower_bond)
+                    self._genes[i] + gauss(0, lower_bound)
 
-        elif method == "random":
+        elif method == "Random":
             for i in rand_id:
-                self._genes[i] = random() * (upper_bond - lower_bond) + lower_bond
+                self._genes[i] = random() * (upper_bound - lower_bound) + lower_bound
 
         return self._genes
 
     def crossover(self, other, method="One Point"):
         size = self.gene_length()
-        ind1 = Individual(size, 0, 0)
-        ind2 = Individual(size, 0, 0)
         genes1 = []
         genes2 = []
 
@@ -109,10 +127,8 @@ class Individual(object):
                     genes1.append(j)
                     genes2.append(i)
 
-        ind1.set_genes(genes1)
-        ind2.set_genes(genes2)
-
-        return [ind1, ind2]
+        return Individual(size, self._lower_bound, self._upper_bound, genes1), Individual(size, self._lower_bound,
+                                                                                          self._upper_bound, genes2)
 
     def __str__(self):
         return str(self._genes)

@@ -13,10 +13,19 @@ class Population(object):
             self._individuals = individuals
         else:
             self._individuals = self.make_population(num_individuals)
+        self._elites = []
         self._fitness = []
         self._normalised_fitness = []
         self._cumulative_sum = []
         self._function = fnc
+        self._selected = []
+
+    def add_elites(self, elites):
+        self._elites += elites
+        self._elites = sorted(self._elites)
+
+    def get_elites(self):
+        return self._elites
 
     def make_population(self, num_individuals):
         individuals = []
@@ -51,6 +60,14 @@ class Population(object):
     def get_function(self):
         return self._function
 
+    def sort_individuals(self):
+        self.calculate_fitness()
+        self._individuals = sorted(self._individuals)
+
+    def separate_elites(self):
+        self.sort_individuals()
+        self._elites.append(self._individuals.pop(0))
+
     def calculate_fitness(self):
         for i in range(self.get_population_size()):
             self._fitness.append(self._individuals[i].calc_fitness(self._function))
@@ -60,7 +77,7 @@ class Population(object):
         fitness_sum = sum(self._fitness)
         for i in range(self.get_population_size()):
             normalized.append(self._fitness[i] / fitness_sum)
-        self._normalised_fitness = sorted(normalized, reverse=True)
+        self._normalised_fitness = sorted(normalized)
 
     def calculate_cumulative_sum(self):
         previous = 0
@@ -74,7 +91,9 @@ class Population(object):
     #     var = sorted(var)
     #     return var.index(chance)
 
-    def selection(self, method='Fittest Half'):
+    def selection(self, method='Fittest Half', elitism=True):
+        if elitism:
+            self.separate_elites()
         self.calculate_fitness()
         self.calculate_normalized_fitness()
         self.calculate_cumulative_sum()
@@ -102,5 +121,36 @@ class Population(object):
                 chosen.append(self._individuals[num])
             selected = Population(self.get_population_size() // 2, self._num_genes, self._lower_bound,
                                   self._upper_bound, self._function, chosen)
+        selected.add_elites(self.get_elites())
         selected.calculate_fitness()
         return selected
+
+    def pairing(self, method='Fittest'):
+        self._individuals += self._elites
+        self._elites = []
+        self.sort_individuals()
+        if method == 'Fittest':
+            for i in range(0, self.get_population_size(), 2):
+                children = self._individuals[i].crossover(self._individuals[i + 1])
+                self._individuals += children
+        elif method == 'Random':
+            for i in range(0, self.get_population_size(), 2):
+                chosen = random.sample(range(0, self.get_population_size()), 2)
+                children = self._individuals[chosen[0]].crossover(self._individuals[chosen[1]])
+                self._individuals.append(children)
+        self.calculate_fitness()
+
+    def mutations(self, method='Gauss', elitism=True):
+        if elitism:
+            self.separate_elites()
+        for ind in self._individuals:
+            ind.mutation()
+        self._individuals = self._elites + self._individuals
+        self.sort_individuals()
+        self._elites = []
+
+    def __str__(self):
+        string = ""
+        for ind in self._individuals:
+            string += " Fitness: " + str(ind.get_fitness()) + " " + str(ind) + "\n"
+        return string
