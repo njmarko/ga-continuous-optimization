@@ -1,20 +1,20 @@
-from src.model.individual import Individual
-from src.model.population import Population
 from src.functions.functions import ackley
+from src.ga import ga
 
 
 def main():
-    pop = Population(50, 2, -10, 10, ackley)
-
-    for i in range(200):
-        print(pop)
-        print(pop.get_pop_size())
-        pop = pop.selection()
-        pop.pairing()
-        pop.mutations()
-        print(pop.get_pop_size())
-    print(pop)
-
+    options = {
+        "num_genes": 100,
+        "max_iter": 100,
+        "lower_bound": -10,
+        "upper_bound": 10,
+        "find_max": 0,
+        "prints": 1,
+        "average_result": None,
+        "best_result": None,
+        "similarity": 60
+    }
+    ga(ackley, 2, options)
 
 
 if __name__ == '__main__':

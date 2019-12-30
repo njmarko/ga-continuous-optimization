@@ -1,6 +1,7 @@
-from src.model.individual import Individual
-from random import random, randint, sample
 from math import ceil
+from random import sample
+
+from src.model.individual import Individual
 
 
 class Population(object):
@@ -92,6 +93,21 @@ class Population(object):
             self._cumulative_sum.append(previous + self._normalised_fitness[i])
             previous += self._normalised_fitness[i]
 
+    def get_min(self):
+        try:
+            return min(self._fitness)
+        except ValueError:
+            return None
+
+    def get_max(self):
+        try:
+            return max(self._fitness)
+        except ValueError:
+            return None
+
+    def get_average(self):
+        return sum(self._fitness) / self._num_genes
+
     # def roulette(self, cumulative_sum, chance):
     #     var = list(cumulative_sum.copy())
     #     var.append(chance)
@@ -107,17 +123,18 @@ class Population(object):
         # self.calculate_cumulative_sum()
         selected = None
         if method == 'Roulette Wheel':
-            selected_indices = []
-        #     for i in range(self.get_population_size() // 2):
-        #         selected_indices.append(self.roulette(self._cumulative_sum, random()))
-        #         while len(set(selected_indices)) != len(selected_indices):
-        #             selected_indices[i] = (self.roulette(self._cumulative_sum, random()))
-        #     chosen = []
-        #     print(selected_indices)
-        #     for index in sorted(selected_indices):
-        #         chosen.append(self._individuals[index])
-        #     selected = Population(self.get_population_size() // 2, self._num_genes, self._lower_bound,
-        #                           self._upper_bound, self._function, chosen)
+            pass
+            # selected_indices = []
+            # for i in range(self.get_population_size() // 2):
+            #     selected_indices.append(self.roulette(self._cumulative_sum, random()))
+            #     while len(set(selected_indices)) != len(selected_indices):
+            #         selected_indices[i] = (self.roulette(self._cumulative_sum, random()))
+            # chosen = []
+            # print(selected_indices)
+            # for index in sorted(selected_indices):
+            #     chosen.append(self._individuals[index])
+            # selected = Population(self.get_population_size() // 2, self._num_genes, self._lower_bound,
+            #                       self._upper_bound, self._function, chosen)
         elif method == 'Fittest Half':
             chosen = self._individuals[0:self.get_pop_size() // 2]
             selected = Population(self.get_pop_size() + len(self._elites), self._num_genes,
@@ -142,14 +159,14 @@ class Population(object):
         if method == 'Fittest':
             self.sort_individuals()
             i = 0
-            while len(self._children) < max_num-len(self._elites):
-                children = self._parents[i].crossover(self._parents[i + 1],method=crossover)
+            while len(self._children) < max_num - len(self._elites):
+                children = self._parents[i].crossover(self._parents[i + 1], method=crossover)
                 self._children += children
                 i += 1
         elif method == 'Random':
             while len(self._children) < max_num - len(self._elites):
                 chosen = sample(range(0, len(self._parents)), 2)
-                children = self._parents[chosen[0]].crossover(self._parents[chosen[1]],method=crossover)
+                children = self._parents[chosen[0]].crossover(self._parents[chosen[1]], method=crossover)
                 self._children += children
 
     def mutations(self, mutate_fraction=0.8, method='Gauss', elitism=True):
