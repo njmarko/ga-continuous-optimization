@@ -4,8 +4,8 @@ from src.ga import ga
 
 def main():
     options = {
-        "num_genes": 100,
-        "max_iter": 100,
+        "pop_size": 100,
+        "max_iter": 200,
         "lower_bound": -10,
         "upper_bound": 10,
         "find_max": 0,

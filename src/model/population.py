@@ -1,5 +1,5 @@
 from math import ceil
-from random import sample
+from random import sample, random
 
 from src.model.individual import Individual
 
@@ -108,33 +108,39 @@ class Population(object):
     def get_average(self):
         return sum(self._fitness) / self._num_genes
 
-    # def roulette(self, cumulative_sum, chance):
-    #     var = list(cumulative_sum.copy())
-    #     var.append(chance)
-    #     var = sorted(var)
-    #     return var.index(chance)
+    def roulette(self, chance):
+        ind1 = 0
+        ind2 = len(self._cumulative_sum) - 1
+        mid = (ind1 + ind2) // 2
+        while ind1 != mid and ind2 != mid:
+            if self._cumulative_sum[mid] > chance:
+                ind2 = mid
+                mid = (ind1 + ind2) // 2
+            else:
+                ind1 = mid
+                mid = (ind1 + ind2) // 2
+        if chance >= self._cumulative_sum[mid]:
+            return mid + 1
+        else:
+            return mid
 
-    def selection(self, method='Fittest Half', elitism=True):
+    def selection(self, method='Roulette Wheel', elitism=True):
         self.sort_individuals()
         if elitism:
             self.separate_elites()
-        # self.calculate_fitness()
-        # self.calculate_normalized_fitness()
-        # self.calculate_cumulative_sum()
         selected = None
         if method == 'Roulette Wheel':
-            pass
-            # selected_indices = []
-            # for i in range(self.get_population_size() // 2):
-            #     selected_indices.append(self.roulette(self._cumulative_sum, random()))
-            #     while len(set(selected_indices)) != len(selected_indices):
-            #         selected_indices[i] = (self.roulette(self._cumulative_sum, random()))
-            # chosen = []
-            # print(selected_indices)
-            # for index in sorted(selected_indices):
-            #     chosen.append(self._individuals[index])
-            # selected = Population(self.get_population_size() // 2, self._num_genes, self._lower_bound,
-            #                       self._upper_bound, self._function, chosen)
+            self.calculate_fitness()
+            self.calculate_normalized_fitness()
+            self.calculate_cumulative_sum()
+            selected_indices = set()
+            while len(selected_indices) < self.get_pop_size() // 2:
+                selected_indices.add(self.roulette(random()))
+            chosen = []
+            for index in sorted(selected_indices):
+                chosen.append(self._individuals[index])
+            selected = Population(self.get_pop_size() + len(self._elites), self._num_genes, self._lower_bound,
+                                  self._upper_bound, self._function, chosen)
         elif method == 'Fittest Half':
             chosen = self._individuals[0:self.get_pop_size() // 2]
             selected = Population(self.get_pop_size() + len(self._elites), self._num_genes,

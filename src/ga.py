@@ -7,7 +7,7 @@ def ga(fnc, axis=2, options=None):
     if options is None:
         options = {}
     opt = {
-        "num_genes": 100,
+        "pop_size": 100,
         "max_iter": 100,
         "lower_bound": -10,
         "upper_bound": 10,
@@ -18,7 +18,7 @@ def ga(fnc, axis=2, options=None):
         "similarity": 50
     }
     opt.update(options)
-    num_genes = opt["num_genes"]
+    pop_size = opt["pop_size"]
     max_iter = opt["max_iter"]
     lower_bound = opt["lower_bound"]
     upper_bound = opt["upper_bound"]
@@ -31,7 +31,7 @@ def ga(fnc, axis=2, options=None):
         ga_function = fnc
         fnc = invert_function
 
-    pop = Population(num_genes, axis, lower_bound, upper_bound, fnc)
+    pop = Population(pop_size, axis, lower_bound, upper_bound, fnc)
     if options["prints"] == 1:
         print(pop)
 
