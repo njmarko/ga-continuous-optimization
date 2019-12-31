@@ -15,13 +15,27 @@ def ga(fnc, axis=2, options=None):
         "prints": 1,
         "average_result": None,
         "best_result": None,
-        "similarity": 50
+        "similarity": 50,
+        "selection": "Roulette Wheel",
+        "pairing": "Fittest",
+        "crossover": "Two point",
+        "crossover_fraction": 0.8,
+        "mutation": "Gauss",
+        "mutate_fraction": 0.8,
+        "elitism": True
     }
     opt.update(options)
     pop_size = opt["pop_size"]
     max_iter = opt["max_iter"]
     lower_bound = opt["lower_bound"]
     upper_bound = opt["upper_bound"]
+    selection = opt["selection"]
+    pairing = opt["pairing"]
+    crossover = opt["crossover"]
+    crossover_fraction = opt["crossover_fraction"]
+    mutation = opt["mutation"]
+    mutate_fraction = opt["mutate_fraction"]
+    elitism = opt["elitism"]
 
     average = []
     best = []
@@ -60,9 +74,9 @@ def ga(fnc, axis=2, options=None):
                 stop = True
                 break
 
-        pop = pop.selection()
-        pop.pairing()
-        pop.mutations()
+        pop = pop.selection(selection, elitism)
+        pop.pairing(pairing, crossover_fraction, crossover, elitism)
+        pop.mutations(mutate_fraction, mutation, elitism)
 
         if opt["prints"] == 1:
             print(pop)
