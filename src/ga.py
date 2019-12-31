@@ -70,9 +70,9 @@ def ga(fnc, axis=2, options=None):
     if not stop:
         print("End of iterations")
 
-        result = pop.get_individuals()[0]
-        print("\nResult:")
-        print(result)
+    result = pop.get_individuals()[0]
+    print("\nResult:")
+    print(result)
 
 
 def invert_function(axis):
