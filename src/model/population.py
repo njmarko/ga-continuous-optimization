@@ -81,15 +81,27 @@ class Population(object):
             self._fitness.append(self._individuals[i].calc_fitness(self._function))
 
     def calculate_normalized_fitness(self):
+        """
+        Calculates normalised fitness for min of a function
+        If the fitness value is closer to the minimum, normalized value will be greater
+        This type of normalization is done so the individual with the lowest fitness value can
+        take up range that is inversely proportional in size when creating cumulative fitness
+        for roulette wheel selection
+        :return:
+        """
         normalized = []
         fitness_sum = sum(self._fitness)
+        s1 = 0
         for i in range(self.get_pop_size()):
-            normalized.append(self._fitness[i] / fitness_sum)
-        self._normalised_fitness = sorted(normalized)
+            normalized.append(fitness_sum / self._fitness[i])
+            s1 += fitness_sum / self._fitness[i]
+        for i in range(len(normalized)):
+            normalized[i] /= s1
+        self._normalised_fitness = sorted(normalized, reverse=True)
 
     def calculate_cumulative_sum(self):
         previous = 0
-        for i in reversed(range(self.get_pop_size())):
+        for i in (range(self.get_pop_size())):
             self._cumulative_sum.append(previous + self._normalised_fitness[i])
             previous += self._normalised_fitness[i]
 
@@ -158,7 +170,7 @@ class Population(object):
         # selected.calculate_fitness()
         return selected
 
-    def pairing(self, method='Fittest', crossover_fraction=0.8, crossover="Two point", elitism=True):
+    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", elitism=True):
         if elitism:
             self._parents = self._elites + self._parents
         max_num = crossover_fraction * self._num_individuals
