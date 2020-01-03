@@ -20,15 +20,14 @@ def griewank(axis):
 
     for i, x in enumerate(axis):
         sum1 += (x * x) / 4000
-        product1 *= cos(x / sqrt(i+1))
+        product1 *= cos(x / sqrt(i + 1))
 
     ans = sum1 - product1 + 1
     return ans
 
 
 def michalewicz(axis):
-    sum1 = 0
     ans = 0
     for i, x in enumerate(axis):
-        ans -= sin(x) * pow(sin(((i+1) * x * x) / pi), 20)
+        ans -= sin(x) * pow(sin(((i + 1) * x * x) / pi), 20)
     return ans
