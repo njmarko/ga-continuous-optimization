@@ -30,7 +30,7 @@ def michalewicz(axis):
     sum1 = 0
 
     for i, x in enumerate(axis):
-        sum1 += sin(x)
+        sum1 += sin(x) * pow(sin(((i + 1) * x * x) / pi), 20)
 
-    ans = -sum1 * pow(sin(((i + 1) * x * x) / pi), 20)
+    ans = -sum1
     return ans
