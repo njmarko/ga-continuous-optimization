@@ -1,4 +1,4 @@
-from src.model.population import Population
+from src.model.population2 import Population
 
 ga_function = None
 
@@ -40,7 +40,7 @@ def ga(fnc, axis=2, options=None):
     average = []
     best = []
 
-    if opt["find_max"] is 1:
+    if opt["find_max"] == 1:
         global ga_function
         ga_function = fnc
         fnc = invert_function
@@ -74,9 +74,13 @@ def ga(fnc, axis=2, options=None):
                 stop = True
                 break
 
-        pop = pop.selection(selection, elitism)
-        pop.pairing(pairing, crossover_fraction, crossover, elitism)
-        pop.mutations(mutate_fraction, mutation, elitism)
+        pop.selection()
+        pop.pairing()
+        pop.mutations()
+        pop = pop.finalize()
+        # pop = pop.selection(selection, elitism)
+        # pop.pairing(pairing, crossover_fraction, crossover, elitism)
+        # pop.mutations(mutate_fraction, mutation, elitism)
 
         if opt["prints"] == 1:
             print(pop)

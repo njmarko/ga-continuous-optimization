@@ -1,13 +1,14 @@
-from src.functions.functions import ackley
+from src.functions.functions import ackley, griewank, michalewicz
 from src.ga import ga
+from src.model.population2 import Population
 
 
 def main():
     options = {
         "pop_size": 100,
-        "max_iter": 100,
-        "lower_bound": -10,
-        "upper_bound": 10,
+        "max_iter": 200,
+        "lower_bound": 0,
+        "upper_bound": 4,
         "find_max": 0,
         "prints": 1,
         "average_result": None,
@@ -18,10 +19,11 @@ def main():
         "crossover": "Two point",
         "crossover_fraction": 0.8,
         "mutation": "Gauss",
-        "mutate_fraction": 0.8,
+        "mutate_fraction": 0.2,
         "elitism": True
     }
-    ga(ackley, 2, options)
+    ga(michalewicz, 2, options)
+    print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
 
 
 if __name__ == '__main__':
