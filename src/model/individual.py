@@ -73,9 +73,9 @@ class Individual(object):
     # -----------
 
     # lower_bound je devijacija u gausu
-    def mutation(self, chance=1, mutation_rate=2, method="Gauss", lower_bound=5, upper_bound=6):
-        if random() > chance:
-            return self._genes
+    def mutation(self, mutation_rate=2, method="Gauss"):
+        new_mutated = Individual(self.get_num_of_genes(), self.get_lower_bond(), self.get_upper_bond(),
+                                 self.get_genes()[:])
 
         gene_len = self.gene_length()
         if mutation_rate > gene_len:
@@ -83,20 +83,21 @@ class Individual(object):
         rand_id = sample(range(0, gene_len), mutation_rate)
         if method == "Gauss":
             for i in rand_id:
-                self._genes[i] = \
+                new_mutated._genes[i] = \
                     self._genes[i] + gauss(0, 1)
 
         elif method == "Random":
+            lower_bound = self.get_lower_bond()
+            upper_bound = self.get_upper_bond()
             for i in rand_id:
-                self._genes[i] = random() * (upper_bound - lower_bound) + lower_bound
+                new_mutated._genes[i] = random() * (upper_bound - lower_bound) + lower_bound
 
-        return self._genes
+        return new_mutated.get_genes()
 
     def crossover(self, other, method="Two point", param1=1):
         size = self.gene_length()
         genes1 = []
         genes2 = []
-
         if method == "Two point":
             if size == 1:
                 method = "One point"
@@ -146,6 +147,8 @@ class Individual(object):
         return genes1, genes2
 
     def crossover_random(self, other):
+        genes1 = []
+        genes2 = []
         for i, j in zip(self.get_genes(), other.get_genes()):
             if random() > 0.5:
                 genes1.append(i)
