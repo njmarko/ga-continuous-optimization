@@ -102,6 +102,10 @@ class Individual(object):
                 method = "One point"
             else:
                 genes1, genes2 = self.crossover_two_point(other)
+                return Individual(size, self._lower_bound, self._upper_bound, genes1), Individual(size,
+                                                                                                  self._lower_bound,
+                                                                                                  self._upper_bound,
+                                                                                                  genes2)
 
         if method == "One point":
             genes1, genes2 = self.crossover_one_point(other)
