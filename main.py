@@ -1,6 +1,5 @@
-from src.functions.functions import ackley, griewank, michalewicz
+from src.functions.functions import michalewicz
 from src.ga import ga
-from src.model.population2 import Population
 
 
 def main():
@@ -10,20 +9,31 @@ def main():
         "lower_bound": 0,
         "upper_bound": 4,
         "find_max": 0,
-        "prints": 1,
+        "prints": 0,
         "average_result": None,
         "best_result": None,
         "similarity": 60,
         "selection": "Roulette Wheel",
         "pairing": "Fittest",
-        "crossover": "Two point",
+        "crossover": "Intermediate",
         "crossover_fraction": 0.8,
+        "intermediate_offset": 1,  # 0 mean child will be between parents, 1 mean 2
         "mutation": "Gauss",
         "mutate_fraction": 0.2,
-        "elitism": True
+        "elitism": 0.02
     }
-    ga(michalewicz, 2, options)
+    res = ga(michalewicz, 2, options)
+    # ga(ackley, 2, options)
     print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
+    print(res)
+    res = ga(michalewicz, 2, options)
+    print(res)
+    res = ga(michalewicz, 2, options)
+    print(res)
+    res = ga(michalewicz, 2, options)
+    print(res)
+    res = ga(michalewicz, 2, options)
+    print(res)
 
 
 if __name__ == '__main__':

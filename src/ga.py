@@ -7,7 +7,7 @@ def ga(fnc, axis=2, options=None):
     if options is None:
         options = {}
     opt = {
-        "pop_size": 100,
+        "pop_size": 1000,
         "max_iter": 100,
         "lower_bound": -10,
         "upper_bound": 10,
@@ -20,9 +20,10 @@ def ga(fnc, axis=2, options=None):
         "pairing": "Fittest",
         "crossover": "Two point",
         "crossover_fraction": 0.8,
+        "intermediate_offset": 1,
         "mutation": "Gauss",
         "mutate_fraction": 0.8,
-        "elitism": True
+        "elitism": 0.2
     }
     opt.update(options)
     pop_size = opt["pop_size"]
@@ -36,6 +37,8 @@ def ga(fnc, axis=2, options=None):
     mutation = opt["mutation"]
     mutate_fraction = opt["mutate_fraction"]
     elitism = opt["elitism"]
+    intermediate_offset = opt["intermediate_offset"]
+    param1 = intermediate_offset
 
     average = []
     best = []
@@ -56,27 +59,30 @@ def ga(fnc, axis=2, options=None):
         if opt["average_result"] is not None:
             average.append(pop.get_average())
             if average[-1] < opt["average_result"]:
-                print("Terminated in " + str(i) + ". iteration. Found average result.")
+                if opt["prints"] == 1:
+                    print("Terminated in " + str(i) + ". iteration. Found average result.")
 
                 stop = True
                 break
 
         if opt["best_result"] is not None:
             if best[-1] < opt["best_result"]:
-                print("Terminated in " + str(i) + ". iteration. Found required result.")
+                if opt["prints"] == 1:
+                    print("Terminated in " + str(i) + ". iteration. Found required result.")
 
                 stop = True
                 break
 
         if opt["similarity"] is not None:
             if similarity_check(best, opt["similarity"]):
-                print("Terminated in " + str(i) + ". iteration. Similar results.")
+                if opt["prints"] == 1:
+                    print("Terminated in " + str(i) + ". iteration. Similar results.")
                 stop = True
                 break
 
-        pop.selection()
-        pop.pairing()
-        pop.mutations()
+        pop.selection(selection, elitism)
+        pop.pairing(pairing, crossover_fraction, crossover, param1)
+        pop.mutations(mutate_fraction, mutation)
         pop = pop.finalize()
         # pop = pop.selection(selection, elitism)
         # pop.pairing(pairing, crossover_fraction, crossover, elitism)
@@ -85,12 +91,14 @@ def ga(fnc, axis=2, options=None):
         if opt["prints"] == 1:
             print(pop)
 
-    if not stop:
-        print("End of iterations")
-
     result = pop.get_individuals()[0]
-    print("\nResult:")
-    print(result)
+    if opt["prints"] == 1:
+        if not stop:
+            print("End of iterations")
+        print("\nResult:")
+        print(result)
+
+    return result
 
 
 def invert_function(axis):

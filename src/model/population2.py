@@ -110,16 +110,16 @@ class Population(object):
                 elites.append(individuals.pop(0))
             return elites
 
-    def calculate_fitness(self, individuals=None, function=None):
-        if not function:
-            function = self._function
+    def calculate_fitness(self, individuals=None, fnc=None):
+        if not fnc:
+            fnc = self._function
         if not individuals:
             individuals = self._individuals
             fitness = self._fitness
         else:
             fitness = []
         for i in range(len(individuals)):
-            fitness.append(individuals[i].calc_fitness(function))
+            fitness.append(individuals[i].calc_fitness(fnc))
         return fitness
 
     def fitness_scaling(self, fitness=None, scaling_factor=-1, offset=0.001):
@@ -205,7 +205,7 @@ class Population(object):
         self._parents = chosen
         return chosen
 
-    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", parents=None):
+    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", param1=0.2, parents=None):
         if not parents:
             parents = self._elites + self._parents
             max_num = crossover_fraction * self._num_individuals
@@ -216,16 +216,16 @@ class Population(object):
             self.sort_individuals(parents)
             i = 0
             while len(children) < max_num - len(self._elites):
-                if i+1 >= len(parents):
+                if i + 1 >= len(parents):
                     i = 0
-                new_children = parents[i].crossover(parents[i + 1], method=crossover)
+                new_children = parents[i].crossover(parents[i + 1], method=crossover, param1=param1)
                 children += new_children
                 i += 2
 
         elif method == 'Random':
             while len(children) < max_num - len(self._elites):
                 chosen = sample(range(0, len(parents)), 2)
-                new_children = parents[chosen[0]].crossover(parents[chosen[1]], method=crossover)
+                new_children = parents[chosen[0]].crossover(parents[chosen[1]], method=crossover, param1=param1)
                 children += new_children
         self._children = children
         return children

@@ -1,4 +1,4 @@
-from random import random, randint, gauss, sample
+from random import random, uniform, randint, gauss, sample
 
 from src.functions.functions import ackley, griewank, michalewicz
 
@@ -92,7 +92,7 @@ class Individual(object):
 
         return self._genes
 
-    def crossover(self, other, method="Two point"):
+    def crossover(self, other, method="Two point", param1=1):
         size = self.gene_length()
         genes1 = []
         genes2 = []
@@ -123,6 +123,48 @@ class Individual(object):
                 else:
                     genes1.append(j)
                     genes2.append(i)
+
+        # parent1 + RAND(0,1) * RATIO * (parent2-parent1)  ->  can't go before parent1
+        # elif method == "Intermediate":
+        #     ratio = 1
+        #     genes1 = [other.get_genes()[i] + random() * ratio * (self.get_genes()[i] - other.get_genes()[i])
+        #               for i in range(self.get_num_of_genes())]
+        #     genes2 = [other.get_genes()[i] + random() * ratio * (self.get_genes()[i] - other.get_genes()[i])
+        #               for i in range(self.get_num_of_genes())]
+
+        elif method == "Intermediate":
+            a = -param1
+            b = 1 + param1
+            genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                      for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
+            genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                      for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
+
+        # elif method == "Line Intermediate":
+        #     ratio = 1
+        #     rand = random()
+        #     genes1 = [other.get_genes()[i] + rand * ratio * (self.get_genes()[i] - other.get_genes()[i])
+        #               for i in range(self.get_num_of_genes())]
+        #     rand = random()
+        #
+        #     genes2 = [other.get_genes()[i] + rand * ratio * (self.get_genes()[i] - other.get_genes()[i])
+        #               for i in range(self.get_num_of_genes())]
+
+        elif method == "Line Intermediate":
+            a = -param1
+            b = 1 + param1
+
+            rand = uniform(a, b)
+            genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                      for i in range(self.get_num_of_genes())]
+            rand = uniform(a, b)
+            genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                      for i in range(self.get_num_of_genes())]
+
+        elif method == "Heuristic":
+            pass
+        else:
+            print("No crossover, random values for children")
 
         return Individual(size, self._lower_bound, self._upper_bound, genes1), Individual(size, self._lower_bound,
                                                                                           self._upper_bound, genes2)
