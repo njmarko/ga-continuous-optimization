@@ -101,73 +101,76 @@ class Individual(object):
             if size == 1:
                 method = "One point"
             else:
-                positions = sorted(sample(range(0, size), 2))
-
-                point1 = positions[0]
-                point2 = positions[1]
-
-                genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:point2] + self.get_genes()[point2:]
-                genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:point2] + other.get_genes()[point2:]
+                genes1, genes2 = self.crossover_two_point(other)
 
         if method == "One point":
-            point1 = randint(0, size - 1)
-
-            genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:]
-            genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:]
+            genes1, genes2 = self.crossover_one_point(other)
 
         elif method == "Random":
-            for i, j in zip(self.get_genes(), other.get_genes()):
-                if random() > 0.5:
-                    genes1.append(i)
-                    genes2.append(j)
-                else:
-                    genes1.append(j)
-                    genes2.append(i)
-
-        # parent1 + RAND(0,1) * RATIO * (parent2-parent1)  ->  can't go before parent1
-        # elif method == "Intermediate":
-        #     ratio = 1
-        #     genes1 = [other.get_genes()[i] + random() * ratio * (self.get_genes()[i] - other.get_genes()[i])
-        #               for i in range(self.get_num_of_genes())]
-        #     genes2 = [other.get_genes()[i] + random() * ratio * (self.get_genes()[i] - other.get_genes()[i])
-        #               for i in range(self.get_num_of_genes())]
+            genes1, genes2 = self.crossover_random(other)
 
         elif method == "Intermediate":
-            a = -param1
-            b = 1 + param1
-            genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
-                      for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
-            genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
-                      for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
-
-        # elif method == "Line Intermediate":
-        #     ratio = 1
-        #     rand = random()
-        #     genes1 = [other.get_genes()[i] + rand * ratio * (self.get_genes()[i] - other.get_genes()[i])
-        #               for i in range(self.get_num_of_genes())]
-        #     rand = random()
-        #
-        #     genes2 = [other.get_genes()[i] + rand * ratio * (self.get_genes()[i] - other.get_genes()[i])
-        #               for i in range(self.get_num_of_genes())]
+            genes1, genes2 = self.crossover_intermediate(other, param1)
 
         elif method == "Line Intermediate":
-            a = -param1
-            b = 1 + param1
-
-            rand = uniform(a, b)
-            genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
-                      for i in range(self.get_num_of_genes())]
-            rand = uniform(a, b)
-            genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
-                      for i in range(self.get_num_of_genes())]
+            genes1, genes2 = self.crossover_line_intermediate(other, param1)
 
         elif method == "Heuristic":
             pass
+
         else:
             print("No crossover, random values for children")
 
         return Individual(size, self._lower_bound, self._upper_bound, genes1), Individual(size, self._lower_bound,
                                                                                           self._upper_bound, genes2)
+
+    def crossover_one_point(self, other):
+        point1 = randint(0, self.gene_length() - 1)
+
+        genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:]
+        genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:]
+        return genes1, genes2
+
+    def crossover_two_point(self, other):
+        positions = sorted(sample(range(0, self.gene_length()), 2))
+
+        point1 = positions[0]
+        point2 = positions[1]
+
+        genes1 = self.get_genes()[0:point1] + other.get_genes()[point1:point2] + self.get_genes()[point2:]
+        genes2 = other.get_genes()[0:point1] + self.get_genes()[point1:point2] + other.get_genes()[point2:]
+        return genes1, genes2
+
+    def crossover_random(self, other):
+        for i, j in zip(self.get_genes(), other.get_genes()):
+            if random() > 0.5:
+                genes1.append(i)
+                genes2.append(j)
+            else:
+                genes1.append(j)
+                genes2.append(i)
+        return genes1, genes2
+
+    def crossover_intermediate(self, other, param1):
+        a = -param1
+        b = 1 + param1
+        genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                  for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
+        genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                  for i, rand in enumerate([uniform(a, b) for _ in range(self.get_num_of_genes())])]
+        return genes1, genes2
+
+    def crossover_line_intermediate(self, other, param1):
+        a = -param1
+        b = 1 + param1
+
+        rand = uniform(a, b)
+        genes1 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                  for i in range(self.get_num_of_genes())]
+        rand = uniform(a, b)
+        genes2 = [other.get_genes()[i] * rand + self.get_genes()[i] * (1 - rand)
+                  for i in range(self.get_num_of_genes())]
+        return genes1, genes2
 
     def __str__(self):
         return "Fitness: " + str(self._fitness) + " " + str(self._genes)

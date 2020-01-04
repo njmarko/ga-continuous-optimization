@@ -1,4 +1,4 @@
-from src.functions.functions import michalewicz
+from src.functions.functions import *
 from src.ga import ga
 
 
@@ -17,22 +17,22 @@ def main():
         "pairing": "Fittest",
         "crossover": "Intermediate",
         "crossover_fraction": 0.8,
-        "intermediate_offset": 1,  # 0 mean child will be between parents, 1 mean 2
+        "intermediate_offset": 2,  # 0 mean child will be between parents, 1 mean offset is same as two parent distance
         "mutation": "Gauss",
         "mutate_fraction": 0.2,
         "elitism": 0.02
     }
-    res = ga(michalewicz, 2, options)
+    res = ga(ackley, 2, options)
     # ga(ackley, 2, options)
-    print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
+    # print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
     print(res)
-    res = ga(michalewicz, 2, options)
+    res = ga(ackley, 2, options)
     print(res)
-    res = ga(michalewicz, 2, options)
+    res = ga(ackley, 2, options)
     print(res)
-    res = ga(michalewicz, 2, options)
+    res = ga(ackley, 2, options)
     print(res)
-    res = ga(michalewicz, 2, options)
+    res = ga(ackley, 2, options)
     print(res)
 
 
