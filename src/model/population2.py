@@ -1,4 +1,4 @@
-from math import ceil
+from math import ceil, sqrt
 from random import sample, random, randint
 
 from src.model.individual import Individual
@@ -24,10 +24,6 @@ class Population(object):
         self._normalised_fitness = []
         self._cumulative_sum = []
         self.prepare_population()
-
-    def add_elites(self, elites):
-        self._elites += elites
-        self._elites = sorted(self._elites)
 
     def get_elites(self):
         return self._elites
@@ -86,49 +82,36 @@ class Population(object):
 
     def sort_individuals(self, individuals=None):
         if not individuals:
-            # self.calculate_fitness()
             self._individuals = sorted(self._individuals)
             self._fitness = sorted(self._fitness)
             return self._individuals
         else:
-            # self.calculate_fitness(individuals)
             return sorted(individuals)
 
-    def separate_elites(self, elite_count=0.02, individuals=None):
-        if not individuals:
-            self.sort_individuals()
-            num = ceil(elite_count * self.get_pop_size())  # at least one is elite
-            for i in range(num):
-                self._elites.append(self._individuals.pop(0))
-                self._fitness.pop(0)
-            return self._elites
-        else:
-            self.sort_individuals(individuals)
-            num = ceil(elite_count * len(individuals))
-            elites = []
-            for i in range(num):
-                elites.append(individuals.pop(0))
-            return elites
+    def separate_elites(self, elite_count=0.02):
+        self.sort_individuals()
+        num = ceil(elite_count * self.get_pop_size())  # at least one is elite
+        for i in range(num):
+            self._elites.append(self._individuals.pop(0))
+            self._fitness.pop(0)
+        return self._elites
 
-    def calculate_fitness(self, individuals=None, fnc=None):
-        if not fnc:
-            fnc = self._function
-        if not individuals:
-            individuals = self._individuals
-            fitness = self._fitness
-        else:
-            fitness = []
-        for i in range(len(individuals)):
-            fitness.append(individuals[i].calc_fitness(fnc))
-        return fitness
+    def calculate_fitness(self):
+        self._fitness = []
+        for i in range(len(self._individuals)):
+            self._fitness.append(self._individuals[i].calc_fitness(self._function))
+        return self._fitness
 
-    def fitness_scaling(self, fitness=None, scaling_factor=-1, offset=0.001):
-        if not fitness:
-            fitness = self._fitness
-        highest = max(fitness)
-        return [scaling_factor * x + abs(highest) + offset for x in fitness]
+    def fitness_scaling(self, scaling_factor=-1, offset=0.001):
+        highest = max(self._fitness)
+        self._fitness = [scaling_factor * x + abs(highest) + offset for x in self._fitness]
+        return self._fitness
 
-    def calculate_normalized_fitness(self, fitness=None, fitness_remapping="Fitness Scaling"):
+    def rank_scaling(self):
+        self._fitness = [1 / sqrt(x + 1) for x in range(len(self._fitness))]
+        return self._fitness
+
+    def calculate_normalized_fitness(self, fitness_remapping="Fitness Scaling"):
         """
         Calculates normalised fitness for min of a function
         If the fitness value is closer to the minimum, normalized value will be greater
@@ -137,56 +120,49 @@ class Population(object):
         for roulette wheel selection
         :return:
         """
-        if not fitness:
-            fitness = self._fitness
-        normalized = []
+
+        self._normalised_fitness = []
         if fitness_remapping == "Fitness Scaling":
-            fitness = self.fitness_scaling(fitness)
-        fitness_sum = sum(fitness)
-        for i in range(len(fitness)):
-            normalized.append(fitness[i] / fitness_sum)
-        normalized = sorted(normalized, reverse=True)
-        self._normalised_fitness = normalized
-        return normalized
+            self.fitness_scaling()
+        elif fitness_remapping == "Rank Scaling":
+            self.rank_scaling()
+        fitness_sum = sum(self._fitness)
+        for i in range(len(self._fitness)):
+            self._normalised_fitness.append(self._fitness[i] / fitness_sum)
+        self._normalised_fitness = sorted(self._normalised_fitness, reverse=True)
+        return self._normalised_fitness
 
-    def calculate_cumulative_sum(self, normalized_fitness=None):
-        if not normalized_fitness:
-            normalized_fitness = self._normalised_fitness
+    def calculate_cumulative_sum(self):
+
         previous = 0
-        cumulative_sum = []
-        for i in (range(len(normalized_fitness))):
-            cumulative_sum.append(previous + normalized_fitness[i])
-            previous += normalized_fitness[i]
-        self._cumulative_sum = cumulative_sum
-        return cumulative_sum
+        self._cumulative_sum = []
+        for i in (range(len(self._normalised_fitness))):
+            self._cumulative_sum.append(previous + self._normalised_fitness[i])
+            previous += self._normalised_fitness[i]
+        return self._cumulative_sum
 
-    def roulette(self, chance, cumulative_sum=None):
-        if not cumulative_sum:
-            cumulative_sum = self._cumulative_sum
+    def roulette(self, chance):
         ind1 = 0
-        ind2 = len(cumulative_sum) - 1
+        ind2 = len(self._cumulative_sum) - 1
         mid = (ind1 + ind2) // 2
         while ind1 != mid and ind2 != mid:
-            if cumulative_sum[mid] > chance:
+            if self._cumulative_sum[mid] > chance:
                 ind2 = mid
                 mid = (ind1 + ind2) // 2
             else:
                 ind1 = mid
                 mid = (ind1 + ind2) // 2
-        if chance >= cumulative_sum[mid]:
+        if chance >= self._cumulative_sum[mid]:
             return mid + 1
         else:
             return mid
 
-    def selection(self, method='Roulette Wheel', elite_count=0.02, individuals=None):
-        # self.calculate_fitness(individuals)
-        # self.sort_individuals(individuals)
-        self.separate_elites(elite_count, individuals)
-        fitness = self._fitness
+    def selection(self, method='Roulette Wheel', elite_count=0.02):
+        self.separate_elites(elite_count)
         chosen = []
         if method == 'Roulette Wheel':
-            norm_fitness = self.calculate_normalized_fitness(fitness)
-            self.calculate_cumulative_sum(norm_fitness)
+            self.calculate_normalized_fitness()
+            self.calculate_cumulative_sum()
             selected_indices = []
             while len(selected_indices) < self.get_pop_size() - len(self._elites):
                 selected_indices.append(self.roulette(random()))
@@ -205,13 +181,10 @@ class Population(object):
         self._parents = chosen
         return chosen
 
-    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", intermediate_offset=0.2,
-                parents=None):
-        if not parents:
-            parents = self._elites + self._parents
-            max_num = crossover_fraction * self._num_individuals
-        else:
-            max_num = crossover_fraction * len(parents)
+    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", intermediate_offset=0.2):
+
+        parents = self._elites + self._parents
+        max_num = crossover_fraction * self._num_individuals
         children = []
         if method == 'Fittest':
             self.sort_individuals(parents)
@@ -232,20 +205,16 @@ class Population(object):
         self._children = children
         return children
 
-    def mutations(self, mutate_fraction=0.2, method='Gauss', parents=None):
-        if not parents:
-            parents = self._parents
-            fraction = 1
-            max_iter = self._num_individuals - len(self._children) - len(self._elites)
-        else:
-            fraction = mutate_fraction
-            max_iter = ceil(fraction * len(parents))
+    def mutations(self, method='Gauss'):
+
+        fraction = 1
+        max_iter = self._num_individuals - len(self._children) - len(self._elites)
         mutated = []
-        num = ceil(fraction * len(parents))
-        positions = sample(range(0, len(parents)), num)
+        num = ceil(fraction * len(self._parents))
+        positions = sample(range(0, len(self._parents)), num)
         for i in range(max_iter):
-            parents[positions[i]].mutation(method=method)
-            mutated.append(parents[positions[i]])
+            self._parents[positions[i]].mutation(method=method)
+            mutated.append(self._parents[positions[i]])
 
         self._mutated = mutated
         return mutated

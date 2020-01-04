@@ -1,4 +1,4 @@
-from src.functions.functions import *
+from src.functions.functions import ackley, griewank, michalewicz
 from src.ga import ga
 
 
@@ -6,8 +6,8 @@ def main():
     options = {
         "pop_size": 100,
         "max_iter": 200,
-        "lower_bound": 0,
-        "upper_bound": 4,
+        "lower_bound": -10,
+        "upper_bound": 10,
         "find_max": 0,
         "prints": 0,
         "average_result": None,

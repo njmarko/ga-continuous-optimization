@@ -92,7 +92,7 @@ class Individual(object):
             for i in rand_id:
                 new_mutated._genes[i] = random() * (upper_bound - lower_bound) + lower_bound
 
-        return new_mutated.get_genes()
+        return new_mutated
 
     def crossover(self, other, method="Two point", param1=1):
         size = self.gene_length()

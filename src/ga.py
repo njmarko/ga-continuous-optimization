@@ -81,7 +81,7 @@ def ga(fnc, axis=2, options=None):
 
         pop.selection(selection, elitism)
         pop.pairing(pairing, crossover_fraction, crossover, intermediate_offset=intermediate_offset)
-        pop.mutations(mutate_fraction, mutation)
+        pop.mutations(mutation)
         pop = pop.finalize()
         # pop = pop.selection(selection, elitism)
         # pop.pairing(pairing, crossover_fraction, crossover, elitism)
