@@ -7,7 +7,7 @@ def ga(fnc, axis=2, options=None):
     if options is None:
         options = {}
     opt = {
-        "pop_size": 1000,
+        "pop_size": 100,
         "max_iter": 100,
         "lower_bound": -10,
         "upper_bound": 10,
@@ -38,7 +38,6 @@ def ga(fnc, axis=2, options=None):
     mutate_fraction = opt["mutate_fraction"]
     elitism = opt["elitism"]
     intermediate_offset = opt["intermediate_offset"]
-    param1 = intermediate_offset
 
     average = []
     best = []
@@ -81,7 +80,7 @@ def ga(fnc, axis=2, options=None):
                 break
 
         pop.selection(selection, elitism)
-        pop.pairing(pairing, crossover_fraction, crossover, param1)
+        pop.pairing(pairing, crossover_fraction, crossover, intermediate_offset=intermediate_offset)
         pop.mutations(mutate_fraction, mutation)
         pop = pop.finalize()
         # pop = pop.selection(selection, elitism)
