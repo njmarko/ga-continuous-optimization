@@ -1,8 +1,16 @@
-from src.functions.functions import ackley, griewank, michalewicz
+import sys
+
+from src.functions.functions import *
 from src.ga import ga
+from src.gui.main_window import MainWindow
+from PySide2.QtWidgets import QApplication
 
 
 def main():
+    main_app = QApplication(sys.argv)
+    main_app.main_window = MainWindow()
+    main_app.main_window.show()
+
     options = {
         "pop_size": 100,
         "max_iter": 200,
@@ -22,19 +30,20 @@ def main():
         "mutate_fraction": 0.2,
         "elitism": 0.02
     }
-    res = ga(ackley, 2, options)
-    # ga(ackley, 2, options)
-    # print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
-    print(res)
-    res = ga(ackley, 2, options)
-    print(res)
-    res = ga(ackley, 2, options)
-    print(res)
-    res = ga(ackley, 2, options)
-    print(res)
-    res = ga(ackley, 2, options)
-    print(res)
+    # res = ga(ackley, 2, options)
+    # # ga(ackley, 2, options)
+    # # print("Pravi optimum za michalewicz(dim=2): " + str(michalewicz([2.20, 1.57])))  # ovo je optimum za 2 promenljive
+    # print(res)
+    # res = ga(ackley, 2, options)
+    # print(res)
+    # res = ga(ackley, 2, options)
+    # print(res)
+    # res = ga(ackley, 2, options)
+    # print(res)
+    # res = ga(ackley, 2, options)
+    # print(res)
 
+    sys.exit(main_app.exec_())
 
 if __name__ == '__main__':
     main()
