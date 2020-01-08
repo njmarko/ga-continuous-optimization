@@ -1,5 +1,5 @@
 # from PyQt5.QtWidgets import QComboBox
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, \
     QSpinBox
@@ -16,6 +16,10 @@ from src.gui.Separator import QHLine
 #         self.setFrameShadow(QFrame.Sunken)
 
 class InputsLayout(QFormLayout):
+
+    # this signal is connected to print_output from output_layout class. Connection is done in center_layout
+    ga_result = Signal(str) # a signal that is emited so it can transfer resulting string to the output_layout class
+
     def __init__(self):
         super(InputsLayout, self).__init__()
         self.big_font = QFont()
@@ -30,6 +34,7 @@ class InputsLayout(QFormLayout):
         self.header_run = QLabel()
 
         self.inp_functions_combo = QComboBox()
+        self.inp_num_variables = QSpinBox()
         self.inp_extrema_min = QRadioButton("Minimum")
         self.inp_extrema_max = QRadioButton("Maximum")
         self.inp_pop_size = QSpinBox()
@@ -76,7 +81,7 @@ class InputsLayout(QFormLayout):
     def init_header(self):
         self.header.setFont(self.big_font)
         self.header.setAlignment(Qt.AlignCenter)
-        self.header.setText("Genetic Algorith Continuous Optimization")
+        self.header.setText("Genetic Algorithm Continuous Optimization")
         self.addRow(self.header)
         self.addRow(QHLine())
 
@@ -92,6 +97,9 @@ class InputsLayout(QFormLayout):
         radio_box.addWidget(self.inp_extrema_min)
         radio_box.addWidget(self.inp_extrema_max)
         self.addRow("Function:", self.inp_functions_combo)
+        self.inp_num_variables.setMaximum(10000)
+        self.inp_num_variables.setValue(2)
+        self.addRow("Number of variables:", self.inp_num_variables)
         self.addRow("Find:", radio_box)
         self.addRow(QHLine())
 
@@ -129,7 +137,7 @@ class InputsLayout(QFormLayout):
         self.inp_similarity.setValue(60)
         # TODO: Checkbox for NONE value
         self.inp_best_result.setValue(-10)
-        self.inp_average_result.setValue(0)
+        self.inp_average_result.setValue(-10000)
 
         self.addRow(self.header_stop)
         self.addRow("Max iter", self.inp_max_iter)
@@ -213,7 +221,7 @@ class InputsLayout(QFormLayout):
     def run_button_clicked(self):
 
         function = self.inp_functions_combo.currentData()
-
+        num_var = self.inp_num_variables.text();
         if self.inp_extrema_min.isChecked():
             extrem = 0
         else:
@@ -274,4 +282,5 @@ class InputsLayout(QFormLayout):
             "elitism": float(elit_percent.replace(",", "."))
         }
 
-        res = ga(function, 2, options)
+        res = ga(function, int(num_var), options)
+        self.ga_result.emit(str(res))  # emits a string representation of the best individual

@@ -9,3 +9,6 @@ class OutputLayout(QGridLayout):
         self.console.setText("This is output")
 
         self.addWidget(self.console, 1, 1, 1, 1)
+
+    def print_output(self, output_text):
+        self.console.setText(output_text)
