@@ -1,11 +1,13 @@
 # from PyQt5.QtWidgets import QComboBox
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, QSpinBox
-from src.functions.functions import ackley, michalewicz, griewank
-from src.gui.Separator import QHLine
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, \
+    QSpinBox
+
+from src.functions.functions import ackley, griewank, michalewicz
 from src.ga import ga
-from src.functions.functions import ackley,griewank,michalewicz
+from src.gui.Separator import QHLine
+
 
 # class QHLine(QFrame):
 #     def __init__(self):
@@ -66,7 +68,6 @@ class InputsLayout(QFormLayout):
 
         # connect buttons
         self.btn_run.clicked.connect(self.run_button_clicked)
-
 
     def init_fonts(self):
         self.big_font.setPointSizeF(14)
@@ -209,7 +210,6 @@ class InputsLayout(QFormLayout):
         self.addRow(self.header_run)
         self.addRow(self.btn_run)
 
-
     def run_button_clicked(self):
 
         function = self.inp_functions_combo.currentData()
@@ -234,7 +234,7 @@ class InputsLayout(QFormLayout):
         mutation_method = self.inp_mutation_method.currentText()
         mutation_intensity = self.inp_mutation_intensity.text()
 
-        #za debug
+        # za debug
         print(function)
         print(extrem)
         print(pop_size)
@@ -253,29 +253,25 @@ class InputsLayout(QFormLayout):
         print(mutation_method)
         print(mutation_intensity)
 
-
         options = {
             "pop_size": int(pop_size),
             "max_iter": int(max_iter),
-            "lower_bound": float(low_bound),
-            "upper_bound": float(upp_bound),
+            "lower_bound": float(low_bound.replace(",", ".")),
+            "upper_bound": float(upp_bound.replace(",", ".")),
             "find_max": extrem,
             "prints": 1,
-            "average_result": float(average_res),
-            "best_result": float(best_res),
-            "similarity": float(sim_results),
+            "average_result": float(average_res.replace(",", ".")),
+            "best_result": float(best_res.replace(",", ".")),
+            "similarity": float(sim_results.replace(",", ".")),
             "selection": select_method,
             "pairing": pairing,
             "crossover": crossover_method,
-            "crossover_fraction": float(crossover_fraction),
-            "intermediate_offset": float(intermediate_offset),
+            "crossover_fraction": float(crossover_fraction.replace(",", ".")),
+            "intermediate_offset": float(intermediate_offset.replace(",", ".")),
             # 0 mean child will be between parents, 1 mean offset is same as two parent distance
             "mutation": mutation_method,
-            "mutate_fraction": float(mutation_intensity),
-            "elitism": float(elit_percent)
+            "mutate_fraction": float(mutation_intensity.replace(",", ".")),
+            "elitism": float(elit_percent.replace(",", "."))
         }
 
         res = ga(function, 2, options)
-
-
-
