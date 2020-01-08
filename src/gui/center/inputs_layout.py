@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QComboBox
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox, QRadioButton, QLabel, QSpinBox
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, QSpinBox
 
 from src.functions.functions import ackley, michalewicz, griewank
 from src.gui.Separator import QHLine
@@ -31,25 +31,25 @@ class InputsLayout(QFormLayout):
         self.inp_extrema_min = QRadioButton("Minimum")
         self.inp_extrema_max = QRadioButton("Maximum")
         self.inp_pop_size = QSpinBox()
-        self.inp_lower_bound = QSpinBox()
-        self.inp_upper_bound = QSpinBox()
+        self.inp_lower_bound = QDoubleSpinBox()
+        self.inp_upper_bound = QDoubleSpinBox()
         # Stopping
         self.inp_max_iter = QSpinBox()
         self.inp_similarity = QSpinBox()
-        self.inp_best_result = QSpinBox()
-        self.inp_average_result = QSpinBox()
+        self.inp_best_result = QDoubleSpinBox()
+        self.inp_average_result = QDoubleSpinBox()
         # Selection
         self.inp_selection_method = QComboBox()
-        self.inp_elitism = QSpinBox()
+        self.inp_elitism = QDoubleSpinBox()
         # Pairing
         self.inp_pairing_method = QComboBox()
         # Crossover
         self.inp_crossover_method = QComboBox()
-        self.inp_crossover_fraction = QSpinBox()
-        self.intermediate_offset = QSpinBox()
+        self.inp_crossover_fraction = QDoubleSpinBox()
+        self.intermediate_offset = QDoubleSpinBox()
         # Mutation
         self.inp_mutation_method = QComboBox()
-        self.inp_mutation_intensity = QSpinBox()
+        self.inp_mutation_intensity = QDoubleSpinBox()
 
         self.btn_run = QPushButton("Run")
 
@@ -94,6 +94,15 @@ class InputsLayout(QFormLayout):
         self.header_general.setFont(self.medium_font)
         self.header_general.setText("General")
 
+        self.inp_pop_size.setMaximum(10000)
+        self.inp_pop_size.setValue(100)
+        self.inp_lower_bound.setMaximum(1000000)
+        self.inp_lower_bound.setMinimum(-1000000.0)
+        self.inp_lower_bound.setValue(-10)
+        self.inp_upper_bound.setMaximum(1000000)
+        self.inp_upper_bound.setMinimum(-1000000.0)
+        self.inp_upper_bound.setValue(10)
+
         self.addRow(self.header_general)
         self.addRow("Population size", self.inp_pop_size)
         self.addRow("Lower Bound", self.inp_lower_bound)
@@ -103,6 +112,19 @@ class InputsLayout(QFormLayout):
     def init_row_stop(self):
         self.header_stop.setFont(self.medium_font)
         self.header_stop.setText("Stopping Criteria")
+
+        self.inp_max_iter.setMaximum(100000)
+        self.inp_similarity.setMaximum(100000)
+        self.inp_best_result.setMinimum(-100000)
+        self.inp_best_result.setMaximum(100000)
+        self.inp_average_result.setMinimum(-100000)
+        self.inp_average_result.setMaximum(100000)
+
+        self.inp_max_iter.setValue(10)
+        self.inp_similarity.setValue(60)
+        # TODO: Checkbox for NONE value
+        self.inp_best_result.setValue(-10)
+        self.inp_average_result.setValue(10)
 
         self.addRow(self.header_stop)
         self.addRow("Max iter", self.inp_max_iter)
@@ -115,6 +137,13 @@ class InputsLayout(QFormLayout):
         self.header_selection.setFont(self.medium_font)
         self.header_selection.setText("Selection")
 
+        self.inp_selection_method.addItem("Roulette Wheel", "Roulette Wheel")
+        self.inp_selection_method.addItem("Fittest Half", "Fittest Half")
+        self.inp_selection_method.addItem("Random", "Random")
+        self.inp_selection_method.addItem("No Selection", "No Selection")
+        self.inp_elitism.setMaximum(1)
+        self.inp_elitism.setValue(0.2)
+
         self.addRow(self.header_selection)
         self.addRow("Selection Method", self.inp_selection_method)
         self.addRow("Elitism Percentage", self.inp_elitism)
@@ -124,6 +153,9 @@ class InputsLayout(QFormLayout):
         self.header_pairing.setFont(self.medium_font)
         self.header_pairing.setText("Pairing")
 
+        self.inp_pairing_method.addItem("Fittest", "Fittest")
+        self.inp_pairing_method.addItem("Random", "Random")
+
         self.addRow(self.header_pairing)
         self.addRow("Pairing Method", self.inp_pairing_method)
         self.addRow(QHLine())
@@ -131,6 +163,16 @@ class InputsLayout(QFormLayout):
     def init_row_crossover(self):
         self.header_crossover.setFont(self.medium_font)
         self.header_crossover.setText("Crossover")
+
+        self.inp_crossover_method.addItem("One point", "One point")
+        self.inp_crossover_method.addItem("Two point", "Two point")
+        self.inp_crossover_method.addItem("Intermediate", "Intermediate")
+        self.inp_crossover_method.addItem("Line Intermediate", "Line Intermediate")
+        # TODO: Heuristic
+        self.inp_crossover_method.addItem("Heuristic (TO DO)", "Heuristic")
+        self.inp_crossover_method.addItem("Random", "Random")
+        self.inp_crossover_fraction.setMaximum(1)
+        self.intermediate_offset.setMaximum(20)
 
         self.addRow(self.header_crossover)
         self.addRow("Crossover Method", self.inp_crossover_method)
@@ -141,6 +183,11 @@ class InputsLayout(QFormLayout):
     def init_row_mutation(self):
         self.header_mutation.setFont(self.medium_font)
         self.header_mutation.setText("Mutation")
+
+        self.inp_mutation_method.addItem("Gauss", "Gauss")
+        self.inp_mutation_method.addItem("Random", "Random")
+        self.inp_mutation_intensity.setMaximum(200)
+        self.inp_mutation_intensity.setValue(1)
 
         self.addRow(self.header_mutation)
         self.addRow("Mutation Method", self.inp_mutation_method)
