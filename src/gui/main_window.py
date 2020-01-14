@@ -14,6 +14,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centerWidget)
         self.setWindowTitle("GA")
         self.leftDock = QDockWidget(QWidget())
+        self.setStyleSheet("QWidget{background: #444; color: #ddd;}"
+                           "QScrollBar{background:#383838; width:5px;}"
+                           "QScrollBar::handle { background: #353535; border-radius: 10px;}")
         # self.actionManager = QApplication.instance().actionManager
 
         self.setDocumentMode(False)

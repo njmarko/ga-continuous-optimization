@@ -3,7 +3,7 @@ from src.model.population2 import Population
 ga_function = None
 
 
-def ga(fnc, axis=2, options=None):
+def ga(fnc, axis=2, options=None, callback=None):
     if options is None:
         options = {}
     opt = {
@@ -41,6 +41,7 @@ def ga(fnc, axis=2, options=None):
 
     average = []
     best = []
+    comment = None;
 
     if opt["find_max"] == 1:
         global ga_function
@@ -58,24 +59,19 @@ def ga(fnc, axis=2, options=None):
         if opt["average_result"] is not None:
             average.append(pop.get_average())
             if average[-1] < opt["average_result"]:
-                if opt["prints"] == 1:
-                    print("Terminated in " + str(i) + ". iteration. Found average result.")
-
+                comment = "Terminated in " + str(i + 1) + ". iteration. Found average result."
                 stop = True
                 break
 
         if opt["best_result"] is not None:
             if best[-1] < opt["best_result"]:
-                if opt["prints"] == 1:
-                    print("Terminated in " + str(i) + ". iteration. Found required result.")
-
+                comment = "Terminated in " + str(i + 1) + ". iteration. Found required result."
                 stop = True
                 break
 
         if opt["similarity"] is not None:
             if similarity_check(best, opt["similarity"]):
-                if opt["prints"] == 1:
-                    print("Terminated in " + str(i) + ". iteration. Similar results.")
+                comment = "Terminated in " + str(i) + ". iteration. Similar results."
                 stop = True
                 break
 
@@ -87,15 +83,28 @@ def ga(fnc, axis=2, options=None):
         # pop.pairing(pairing, crossover_fraction, crossover, elitism)
         # pop.mutations(mutate_fraction, mutation, elitism)
 
+        if callback:
+            percentage = i / max_iter * 100
+            callback.update_progress_bar(i, percentage + 1)
+            if ((i + 1) % 5) == 0:
+                callback.add_console_iter(i + 1, pop, opt["find_max"])
+
         if opt["prints"] == 1:
             print(pop)
 
     result = pop.get_individuals()[0]
+
+    if not stop:
+        comment = "End of iterations"
+
     if opt["prints"] == 1:
-        if not stop:
-            print("End of iterations")
+        print(comment)
         print("\nResult:")
         print(result)
+
+    if callback:
+        callback.set_comment(comment)
+        callback.print_result(result)
 
     return result
 

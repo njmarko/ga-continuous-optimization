@@ -9,16 +9,9 @@ from src.ga import ga
 from src.gui.Separator import QHLine
 
 
-# class QHLine(QFrame):
-#     def __init__(self):
-#         super(QHLine, self).__init__()
-#         self.setFrameShape(QFrame.HLine)
-#         self.setFrameShadow(QFrame.Sunken)
-
 class InputsLayout(QFormLayout):
-
     # this signal is connected to print_output from output_layout class. Connection is done in center_layout
-    ga_result = Signal(str) # a signal that is emited so it can transfer resulting string to the output_layout class
+    ga_result = Signal(str)  # a signal that is emited so it can transfer resulting string to the output_layout class
 
     def __init__(self):
         super(InputsLayout, self).__init__()
@@ -31,7 +24,6 @@ class InputsLayout(QFormLayout):
         self.header_pairing = QLabel()
         self.header_crossover = QLabel()
         self.header_mutation = QLabel()
-        self.header_run = QLabel()
 
         self.inp_functions_combo = QComboBox()
         self.inp_num_variables = QSpinBox()
@@ -58,8 +50,6 @@ class InputsLayout(QFormLayout):
         self.inp_mutation_method = QComboBox()
         self.inp_mutation_intensity = QDoubleSpinBox()
 
-        self.btn_run = QPushButton("Run")
-
         self.init_fonts()
         self.init_header()
         self.init_row_functions()
@@ -69,10 +59,6 @@ class InputsLayout(QFormLayout):
         self.init_row_pairing()
         self.init_row_crossover()
         self.init_row_mutation()
-        self.init_row_run()
-
-        # connect buttons
-        self.btn_run.clicked.connect(self.run_button_clicked)
 
     def init_fonts(self):
         self.big_font.setPointSizeF(14)
@@ -133,7 +119,7 @@ class InputsLayout(QFormLayout):
         self.inp_average_result.setMinimum(-100000)
         self.inp_average_result.setMaximum(100000)
 
-        self.inp_max_iter.setValue(100)
+        self.inp_max_iter.setValue(200)
         self.inp_similarity.setValue(60)
         # TODO: Checkbox for NONE value
         self.inp_best_result.setValue(-10)
@@ -156,6 +142,7 @@ class InputsLayout(QFormLayout):
         self.inp_selection_method.addItem("No Selection", "No Selection")
         self.inp_elitism.setMaximum(1)
         self.inp_elitism.setValue(0.05)
+        self.inp_elitism.setSingleStep(0.01)
 
         self.addRow(self.header_selection)
         self.addRow("Selection Method", self.inp_selection_method)
@@ -188,8 +175,10 @@ class InputsLayout(QFormLayout):
         self.inp_mutation_method.setCurrentIndex(2)
         self.inp_crossover_fraction.setMaximum(1)
         self.inp_crossover_fraction.setValue(0.8)
+        self.inp_crossover_fraction.setSingleStep(0.05)
         self.intermediate_offset.setMaximum(20)
-        self.intermediate_offset.setValue(1.2)
+        self.intermediate_offset.setValue(2)
+        self.intermediate_offset.setSingleStep(0.05)
 
         self.addRow(self.header_crossover)
         self.addRow("Crossover Method", self.inp_crossover_method)
@@ -205,23 +194,16 @@ class InputsLayout(QFormLayout):
         self.inp_mutation_method.addItem("Random", "Random")
         self.inp_mutation_intensity.setMaximum(200)
         self.inp_mutation_intensity.setValue(1)
+        self.inp_mutation_intensity.setSingleStep(0.01)
 
         self.addRow(self.header_mutation)
         self.addRow("Mutation Method", self.inp_mutation_method)
         self.addRow("Mutation Intensity", self.inp_mutation_intensity)
         self.addRow(QHLine())
 
-    def init_row_run(self):
-        self.header_run.setFont(self.medium_font)
-        self.header_run.setText("RUN")
-
-        self.addRow(self.header_run)
-        self.addRow(self.btn_run)
-
-    def run_button_clicked(self):
-
+    def get_options(self):
         function = self.inp_functions_combo.currentData()
-        num_var = self.inp_num_variables.text();
+        num_var = self.inp_num_variables.text()
         if self.inp_extrema_min.isChecked():
             extrem = 0
         else:
@@ -242,32 +224,15 @@ class InputsLayout(QFormLayout):
         mutation_method = self.inp_mutation_method.currentText()
         mutation_intensity = self.inp_mutation_intensity.text()
 
-        # za debug
-        print(function)
-        print(extrem)
-        print(pop_size)
-        print(low_bound)
-        print(upp_bound)
-        print(max_iter)
-        print(sim_results)
-        print(best_res)
-        print(average_res)
-        print(select_method)
-        print(elit_percent)
-        print(pairing)
-        print(crossover_method)
-        print(crossover_fraction)
-        print(intermediate_offset)
-        print(mutation_method)
-        print(mutation_intensity)
-
         options = {
+            "function": function,
+            "num_var": num_var,
             "pop_size": int(pop_size),
             "max_iter": int(max_iter),
             "lower_bound": float(low_bound.replace(",", ".")),
             "upper_bound": float(upp_bound.replace(",", ".")),
             "find_max": extrem,
-            "prints": 1,
+            "prints": 0,
             "average_result": float(average_res.replace(",", ".")),
             "best_result": float(best_res.replace(",", ".")),
             "similarity": float(sim_results.replace(",", ".")),
@@ -281,6 +246,4 @@ class InputsLayout(QFormLayout):
             "mutate_fraction": float(mutation_intensity.replace(",", ".")),
             "elitism": float(elit_percent.replace(",", "."))
         }
-
-        res = ga(function, int(num_var), options)
-        self.ga_result.emit(str(res))  # emits a string representation of the best individual
+        return options
