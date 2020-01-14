@@ -1,8 +1,8 @@
+from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QGridLayout, QWidget, QScrollArea
 
 from src.gui.center.inputs_layout import InputsLayout
 from src.gui.center.output_layout import OutputLayout
-from PySide2.QtCore import Qt
 
 
 class CenterLayout(QGridLayout):
@@ -31,4 +31,5 @@ class CenterLayout(QGridLayout):
         self.addWidget(self.output_widget, 1, 2, 1, 1)
 
         # connecting a signal that caries the output message with the print_output function
-        self.output_layout.ga_result.connect(self.output_layout.print_output)
+        # self.output_layout.ga_result.connect(self.output_layout.print_output)
+        # self.inp_similarity_cb.stateChanged.connect(self.inp_similarity_cb)

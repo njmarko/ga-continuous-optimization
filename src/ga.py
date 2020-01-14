@@ -43,11 +43,17 @@ def ga(fnc, axis=2, options=None, callback=None):
     best = []
     comment = None;
 
+    # Inverting parameters for fining max
     if opt["find_max"] == 1:
         global ga_function
         ga_function = fnc
         fnc = invert_function
+        if opt["best_result"]:
+            opt["best_result"] *= -1
+        if opt["average_result"]:
+            opt["average_result"] *= -1
 
+    # Initial Population
     pop = Population(pop_size, axis, lower_bound, upper_bound, fnc)
     if options["prints"] == 1:
         print(pop)
@@ -104,7 +110,7 @@ def ga(fnc, axis=2, options=None, callback=None):
 
     if callback:
         callback.set_comment(comment)
-        callback.print_result(result)
+        callback.print_result(result, opt["find_max"])
 
     return result
 

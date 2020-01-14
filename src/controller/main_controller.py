@@ -28,9 +28,11 @@ class MainController(QObject):
     def set_comment(self, text):
         self.output_layout.set_run_comment(text)
 
-    def print_result(self, ind):
+    def print_result(self, ind, maxf):
+        fitness = ind.get_fitness()
+        if maxf:
+            fitness *= -1
         out = "\nResult:\n"
-        out += "Fitness: {}\n".format(ind.get_fitness())
+        out += "Fitness: {}\n".format(fitness)
         out += "Axis: {}".format(ind.get_genes())
         self.output_layout.append_output(out)
-

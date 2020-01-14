@@ -1,11 +1,10 @@
 # from PyQt5.QtWidgets import QComboBox
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QPushButton, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, \
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QCheckBox, QDoubleSpinBox, QComboBox, QRadioButton, QLabel, \
     QSpinBox
 
 from src.functions.functions import ackley, griewank, michalewicz
-from src.ga import ga
 from src.gui.Separator import QHLine
 
 
@@ -34,8 +33,11 @@ class InputsLayout(QFormLayout):
         self.inp_upper_bound = QDoubleSpinBox()
         # Stopping
         self.inp_max_iter = QSpinBox()
+        self.inp_similarity_cb = QCheckBox()
         self.inp_similarity = QSpinBox()
+        self.inp_best_result_cb = QCheckBox()
         self.inp_best_result = QDoubleSpinBox()
+        self.inp_average_result_cb = QCheckBox()
         self.inp_average_result = QDoubleSpinBox()
         # Selection
         self.inp_selection_method = QComboBox()
@@ -125,11 +127,28 @@ class InputsLayout(QFormLayout):
         self.inp_best_result.setValue(-10)
         self.inp_average_result.setValue(-10000)
 
+        self.inp_similarity_cb.setText("Similar Results")
+        self.inp_best_result_cb.setText("Best Result")
+        self.inp_average_result_cb.setText("Average Result")
+        self.inp_similarity_cb.stateChanged.connect(self.cb_similarity_signal)
+        self.inp_best_result_cb.stateChanged.connect(self.cb_best_result_signal)
+        self.inp_average_result_cb.stateChanged.connect(self.cb_average_result_signal)
+
+        self.inp_similarity_cb.setChecked(True)
+        self.inp_best_result_cb.setChecked(False)
+        self.inp_average_result_cb.setChecked(False)
+
+        self.inp_similarity.setEnabled(True)
+        self.inp_best_result.setEnabled(False)
+        self.inp_best_result.setStyleSheet("background:#555")
+        self.inp_average_result.setEnabled(False)
+        self.inp_average_result.setStyleSheet("background:#555")
+
         self.addRow(self.header_stop)
         self.addRow("Max iter", self.inp_max_iter)
-        self.addRow("Similar Results", self.inp_similarity)
-        self.addRow("Best Result", self.inp_best_result)
-        self.addRow("Average Result", self.inp_average_result)
+        self.addRow(self.inp_similarity_cb, self.inp_similarity)
+        self.addRow(self.inp_best_result_cb, self.inp_best_result)
+        self.addRow(self.inp_average_result_cb, self.inp_average_result)
         self.addRow(QHLine())
 
     def init_row_selection(self):
@@ -246,4 +265,37 @@ class InputsLayout(QFormLayout):
             "mutate_fraction": float(mutation_intensity.replace(",", ".")),
             "elitism": float(elit_percent.replace(",", "."))
         }
+
+        if not self.inp_similarity_cb.isChecked():
+            options["similarity"] = None
+        if not self.inp_best_result_cb.isChecked():
+            options["best_result"] = None
+        if not self.inp_average_result_cb.isChecked():
+            options["average_result"] = None
         return options
+
+    def cb_similarity_signal(self):
+        print("ee")
+        if self.inp_similarity_cb.isChecked():
+            self.inp_similarity.setEnabled(True)
+            self.inp_similarity.setStyleSheet("")
+        else:
+            self.inp_similarity.setEnabled(False)
+            self.inp_similarity.setStyleSheet("background:#555")
+
+    def cb_best_result_signal(self):
+        print("Alo")
+        if self.inp_best_result_cb.isChecked():
+            self.inp_best_result.setEnabled(True)
+            self.inp_best_result.setStyleSheet("")
+        else:
+            self.inp_best_result.setEnabled(False)
+            self.inp_best_result.setStyleSheet("background:#555")
+
+    def cb_average_result_signal(self):
+        if self.inp_average_result_cb.isChecked():
+            self.inp_average_result.setEnabled(True)
+            self.inp_average_result.setStyleSheet("")
+        else:
+            self.inp_average_result.setEnabled(False)
+            self.inp_average_result.setStyleSheet("background:#555")
