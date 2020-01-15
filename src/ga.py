@@ -23,7 +23,8 @@ def ga(fnc, axis=2, options=None, callback=None):
         "intermediate_offset": 1,
         "mutation": "Gauss",
         "mutate_fraction": 0.8,
-        "elitism": 0.2
+        "elitism": 0.2,
+        "fitness_remapping": "Rank Scaling"
     }
     opt.update(options)
     pop_size = opt["pop_size"]
@@ -38,6 +39,7 @@ def ga(fnc, axis=2, options=None, callback=None):
     mutate_fraction = opt["mutate_fraction"]
     elitism = opt["elitism"]
     intermediate_offset = opt["intermediate_offset"]
+    fitness_remapping = opt["fitness_remapping"]
 
     average = []
     best = []
@@ -81,8 +83,9 @@ def ga(fnc, axis=2, options=None, callback=None):
                 stop = True
                 break
 
-        pop.selection(selection, elitism)
-        pop.pairing(pairing, crossover_fraction, crossover, intermediate_offset=intermediate_offset)
+        pop.selection(selection, elitism, fitness_remapping=fitness_remapping)
+        pop.pairing(pairing, crossover_fraction, crossover, intermediate_offset=intermediate_offset,
+                    fitness_remapping=fitness_remapping)
         pop.mutations(mutation)
         pop = pop.finalize()
         # pop = pop.selection(selection, elitism)

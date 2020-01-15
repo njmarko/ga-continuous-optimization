@@ -92,8 +92,10 @@ class Population(object):
         self.sort_individuals()
         num = ceil(elite_count * self.get_pop_size())  # at least one is elite
         for i in range(num):
-            self._elites.append(self._individuals.pop(0))
-            self._fitness.pop(0)
+            # self._elites.append(self._individuals.pop(0))
+            # self._fitness.pop(0)
+            self._elites.append(self._individuals[i])
+
         return self._elites
 
     def calculate_fitness(self):
@@ -111,7 +113,7 @@ class Population(object):
         self._fitness = [1 / sqrt(x + 1) for x in range(len(self._fitness))]
         return self._fitness
 
-    def calculate_normalized_fitness(self, fitness_remapping="Fitness Scaling"):
+    def calculate_normalized_fitness(self, fitness_remapping="Rank Scaling"):
         """
         Calculates normalised fitness for min of a function
         If the fitness value is closer to the minimum, normalized value will be greater
@@ -157,31 +159,31 @@ class Population(object):
         else:
             return mid
 
-    def selection(self, method='Roulette Wheel', elite_count=0.02):
+    def selection(self, method='Roulette Wheel', elite_count=0.02, fitness_remapping="Rank Scaling"):
         self.separate_elites(elite_count)
         chosen = []
         if method == 'Roulette Wheel':
-            self.calculate_normalized_fitness()
+            self.calculate_normalized_fitness(fitness_remapping)
             self.calculate_cumulative_sum()
             selected_indices = []
-            while len(selected_indices) < self.get_pop_size() - len(self._elites):
+            while len(selected_indices) <= self.get_pop_size() - len(self._elites):
                 selected_indices.append(self.roulette(random()))
             for index in sorted(selected_indices):
                 chosen.append(self._individuals[index])
-
         elif method == 'Fittest Half':
-            chosen = self._individuals[0:self.get_pop_size() // 2]
-
+            chosen = self._individuals[len(self._elites):self.get_pop_size() // 2 + len(self._elites)]
         elif method == 'Random':
             for i in range(self.get_pop_size() - len(self._elites)):
-                position = randint(0, self.get_pop_size() - len(self._elites))
+                position = randint(len(self._elites), self.get_pop_size())
                 chosen.append(self._individuals[position])
         elif method == 'No Selection':
-            chosen = self._individuals
+            for i in range(len(self._elites), self.get_pop_size()):
+                chosen.append(self._individuals[i])
         self._parents = chosen
         return chosen
 
-    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point", intermediate_offset=0.2):
+    def pairing(self, method='Random',  crossover_fraction=0.8, crossover="Two point",
+                intermediate_offset=0.2,fitness_remapping="Rank Scaling"):
 
         parents = self._elites + self._parents
         max_num = crossover_fraction * self._num_individuals
@@ -202,6 +204,20 @@ class Population(object):
                 new_children = parents[chosen[0]].crossover(parents[chosen[1]], method=crossover,
                                                             param1=intermediate_offset)
                 children += new_children
+        elif method == "Roulette Wheel":
+            self.calculate_normalized_fitness(fitness_remapping)
+            self.calculate_cumulative_sum()
+            self.sort_individuals(parents)
+            selected_indices = [0 for i in range(2)]
+            while len(children) < max_num - len(self._elites):
+                selected_indices[0] = self.roulette(random()) % len(parents)
+                selected_indices[1] = self.roulette(random()) % len(parents)
+                while selected_indices[0] == selected_indices[1]:
+                    selected_indices[1] = self.roulette(random()) % len(parents)
+                new_children = parents[selected_indices[0]].crossover(parents[selected_indices[1]], method=crossover,
+                                                                      param1=intermediate_offset)
+                children += new_children
+
         self._children = children
         return children
 

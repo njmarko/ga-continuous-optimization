@@ -10,7 +10,7 @@ from src.gui.Separator import QHLine
 
 class InputsLayout(QFormLayout):
     # this signal is connected to print_output from output_layout class. Connection is done in center_layout
-    ga_result = Signal(str)  # a signal that is emited so it can transfer resulting string to the output_layout class
+    ga_result = Signal(str)  # a signal that is emitted so it can transfer resulting string to the output_layout class
 
     def __init__(self):
         super(InputsLayout, self).__init__()
@@ -18,6 +18,7 @@ class InputsLayout(QFormLayout):
         self.medium_font = QFont()
         self.header = QLabel()
         self.header_general = QLabel()
+        self.header_fitness_remapping = QLabel()
         self.header_stop = QLabel()
         self.header_selection = QLabel()
         self.header_pairing = QLabel()
@@ -39,6 +40,8 @@ class InputsLayout(QFormLayout):
         self.inp_best_result = QDoubleSpinBox()
         self.inp_average_result_cb = QCheckBox()
         self.inp_average_result = QDoubleSpinBox()
+        # Fitness remapping
+        self.inp_fitness_remapping = QComboBox()
         # Selection
         self.inp_selection_method = QComboBox()
         self.inp_elitism = QDoubleSpinBox()
@@ -56,6 +59,7 @@ class InputsLayout(QFormLayout):
         self.init_header()
         self.init_row_functions()
         self.init_row_general()
+        self.init_row_fitness_remapping()
         self.init_row_stop()
         self.init_row_selection()
         self.init_row_pairing()
@@ -96,7 +100,7 @@ class InputsLayout(QFormLayout):
         self.header_general.setText("General")
 
         self.inp_pop_size.setMaximum(10000)
-        self.inp_pop_size.setValue(100)
+        self.inp_pop_size.setValue(200)
         self.inp_lower_bound.setMaximum(1000000)
         self.inp_lower_bound.setMinimum(-1000000.0)
         self.inp_lower_bound.setValue(-10)
@@ -108,6 +112,17 @@ class InputsLayout(QFormLayout):
         self.addRow("Population size", self.inp_pop_size)
         self.addRow("Lower Bound", self.inp_lower_bound)
         self.addRow("Upper Bound", self.inp_upper_bound)
+        self.addRow(QHLine())
+
+    def init_row_fitness_remapping(self):
+        self.header_fitness_remapping.setFont(self.medium_font)
+        self.header_fitness_remapping.setText("Fitness Remapping")
+
+        self.inp_fitness_remapping.addItem("Rank Scaling", "Rank Scaling")
+        self.inp_fitness_remapping.addItem("Fitness Scaling", "Fitness Scaling")
+
+        self.addRow(self.header_fitness_remapping)
+        self.addRow("Fitness remapping", self.inp_fitness_remapping)
         self.addRow(QHLine())
 
     def init_row_stop(self):
@@ -172,6 +187,7 @@ class InputsLayout(QFormLayout):
         self.header_pairing.setFont(self.medium_font)
         self.header_pairing.setText("Pairing")
 
+        self.inp_pairing_method.addItem("Roulette Wheel", "Roulette Wheel")
         self.inp_pairing_method.addItem("Fittest", "Fittest")
         self.inp_pairing_method.addItem("Random", "Random")
 
@@ -196,7 +212,7 @@ class InputsLayout(QFormLayout):
         self.inp_crossover_fraction.setValue(0.8)
         self.inp_crossover_fraction.setSingleStep(0.05)
         self.intermediate_offset.setMaximum(20)
-        self.intermediate_offset.setValue(2)
+        self.intermediate_offset.setValue(0.5)
         self.intermediate_offset.setSingleStep(0.05)
 
         self.addRow(self.header_crossover)
@@ -235,13 +251,14 @@ class InputsLayout(QFormLayout):
         best_res = self.inp_best_result.text()
         average_res = self.inp_average_result.text()
         select_method = self.inp_selection_method.currentText()
-        elit_percent = self.inp_elitism.text()
+        elite_percent = self.inp_elitism.text()
         pairing = self.inp_pairing_method.currentText()
         crossover_method = self.inp_crossover_method.currentText()
         crossover_fraction = self.inp_crossover_fraction.text()
         intermediate_offset = self.intermediate_offset.text()
         mutation_method = self.inp_mutation_method.currentText()
         mutation_intensity = self.inp_mutation_intensity.text()
+        fitness_remapping = self.inp_fitness_remapping.currentText()
 
         options = {
             "function": function,
@@ -251,7 +268,7 @@ class InputsLayout(QFormLayout):
             "lower_bound": float(low_bound.replace(",", ".")),
             "upper_bound": float(upp_bound.replace(",", ".")),
             "find_max": extrem,
-            "prints": 0,
+            "prints": 1,
             "average_result": float(average_res.replace(",", ".")),
             "best_result": float(best_res.replace(",", ".")),
             "similarity": float(sim_results.replace(",", ".")),
@@ -263,7 +280,8 @@ class InputsLayout(QFormLayout):
             # 0 mean child will be between parents, 1 mean offset is same as two parent distance
             "mutation": mutation_method,
             "mutate_fraction": float(mutation_intensity.replace(",", ".")),
-            "elitism": float(elit_percent.replace(",", "."))
+            "elitism": float(elite_percent.replace(",", ".")),
+            "fitness_remapping": fitness_remapping
         }
 
         if not self.inp_similarity_cb.isChecked():
