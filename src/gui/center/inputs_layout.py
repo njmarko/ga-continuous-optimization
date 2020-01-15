@@ -189,7 +189,7 @@ class InputsLayout(QFormLayout):
         self.inp_crossover_method.addItem("Two point", "Two point")
 
         # TODO: Heuristic
-        self.inp_crossover_method.addItem("Heuristic (TO DO)", "Heuristic")
+        self.inp_crossover_method.addItem("Heuristic", "Heuristic")
         self.inp_crossover_method.addItem("Random", "Random")
         self.inp_mutation_method.setCurrentIndex(2)
         self.inp_crossover_fraction.setMaximum(1)
