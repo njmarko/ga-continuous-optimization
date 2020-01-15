@@ -1,7 +1,8 @@
+from PySide2.QtCore import Qt, Signal
+from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QApplication, QTextEdit, QWidget, QLabel, QVBoxLayout, QProgressBar, \
     QPushButton
-from PySide2.QtGui import QFont
-from PySide2.QtCore import Qt, Signal
+
 from src.ga import ga
 
 
@@ -36,6 +37,8 @@ class OutputLayout(QGridLayout):
         # new_font = QFont('courier new', 8)
         # self.console.setFont(new_font)
         self.console.setReadOnly(True)
+        self.console.horizontalScrollBar().setEnabled(True)
+        self.console.setLineWrapMode(QTextEdit.NoWrap)
 
     def init_run_section(self):
         font14 = QFont()
