@@ -22,7 +22,8 @@ def ga(fnc, axis=2, options=None, callback=None):
         "crossover_fraction": 0.8,
         "intermediate_offset": 1,
         "mutation": "Gauss",
-        "mutate_fraction": 0.8,
+        "mutation_intensity": 0.8,
+        "mutation_intensity_final": 0.01,
         "elitism": 0.2,
         "fitness_remapping": "Rank Scaling"
     }
@@ -36,14 +37,15 @@ def ga(fnc, axis=2, options=None, callback=None):
     crossover = opt["crossover"]
     crossover_fraction = opt["crossover_fraction"]
     mutation = opt["mutation"]
-    mutate_fraction = opt["mutate_fraction"]
+    mutate_intensity_initial = opt["mutation_intensity"]
+    mutate_intensity_final = opt["mutation_intensity_final"]
     elitism = opt["elitism"]
     intermediate_offset = opt["intermediate_offset"]
     fitness_remapping = opt["fitness_remapping"]
 
     average = []
     best = []
-    comment = None;
+    comment = "End of iterations"  # Default comment if not overridden
 
     # Inverting parameters for fining max
     if opt["find_max"] == 1:
@@ -83,10 +85,11 @@ def ga(fnc, axis=2, options=None, callback=None):
                 stop = True
                 break
 
+        mutate_intensity = scaled_value(mutate_intensity_initial, mutate_intensity_final, i, max_iter - 1)
         pop.selection(selection, elitism, fitness_remapping=fitness_remapping)
         pop.pairing(pairing, crossover_fraction, crossover, intermediate_offset=intermediate_offset,
                     fitness_remapping=fitness_remapping)
-        pop.mutations(mutation)
+        pop.mutations(mutation, mutate_intensity=mutate_intensity)
         pop = pop.finalize()
         # pop = pop.selection(selection, elitism)
         # pop.pairing(pairing, crossover_fraction, crossover, elitism)
@@ -100,11 +103,9 @@ def ga(fnc, axis=2, options=None, callback=None):
 
         if opt["prints"] == 1:
             print(pop)
+    # END OF ITERATIONS
 
     result = pop.get_individuals()[0]
-
-    if not stop:
-        comment = "End of iterations"
 
     if opt["prints"] == 1:
         print(comment)
@@ -134,3 +135,7 @@ def similarity_check(subject, criteria):
             return True
 
     return False
+
+
+def scaled_value(a, b, it, last):
+    return a + ((b - a) * (it / last))

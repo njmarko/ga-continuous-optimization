@@ -221,7 +221,7 @@ class Population(object):
         self._children = children
         return children
 
-    def mutations(self, method='Gauss'):
+    def mutations(self, method='Gauss', mutate_intensity=1):
 
         fraction = 1
         max_iter = self._num_individuals - len(self._children) - len(self._elites)
@@ -229,7 +229,7 @@ class Population(object):
         num = ceil(fraction * len(self._parents))
         positions = sample(range(0, len(self._parents)), num)
         for i in range(max_iter):
-            self._parents[positions[i]].mutation(method=method)
+            self._parents[positions[i]].mutation(method=method, mutate_intensity=mutate_intensity)
             mutated.append(self._parents[positions[i]])
 
         self._mutated = mutated

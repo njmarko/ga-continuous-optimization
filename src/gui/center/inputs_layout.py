@@ -54,6 +54,7 @@ class InputsLayout(QFormLayout):
         # Mutation
         self.inp_mutation_method = QComboBox()
         self.inp_mutation_intensity = QDoubleSpinBox()
+        self.inp_mutation_intensity_final = QDoubleSpinBox()
 
         self.init_fonts()
         self.init_header()
@@ -229,11 +230,18 @@ class InputsLayout(QFormLayout):
         self.inp_mutation_method.addItem("Random", "Random")
         self.inp_mutation_intensity.setMaximum(200)
         self.inp_mutation_intensity.setValue(1)
+        self.inp_mutation_intensity.setDecimals(4)
+
         self.inp_mutation_intensity.setSingleStep(0.01)
+        self.inp_mutation_intensity_final.setMaximum(200)
+        self.inp_mutation_intensity_final.setDecimals(4)
+        self.inp_mutation_intensity_final.setValue(0.001)
+        self.inp_mutation_intensity_final.setSingleStep(0.5)
 
         self.addRow(self.header_mutation)
         self.addRow("Mutation Method", self.inp_mutation_method)
         self.addRow("Mutation Intensity", self.inp_mutation_intensity)
+        self.addRow("Final Mutation Intensity", self.inp_mutation_intensity_final)
         self.addRow(QHLine())
 
     def get_options(self):
@@ -258,6 +266,7 @@ class InputsLayout(QFormLayout):
         intermediate_offset = self.intermediate_offset.text()
         mutation_method = self.inp_mutation_method.currentText()
         mutation_intensity = self.inp_mutation_intensity.text()
+        mutation_intensity_final = self.inp_mutation_intensity_final.text()
         fitness_remapping = self.inp_fitness_remapping.currentText()
 
         options = {
@@ -279,7 +288,8 @@ class InputsLayout(QFormLayout):
             "intermediate_offset": float(intermediate_offset.replace(",", ".")),
             # 0 mean child will be between parents, 1 mean offset is same as two parent distance
             "mutation": mutation_method,
-            "mutate_fraction": float(mutation_intensity.replace(",", ".")),
+            "mutation_intensity": float(mutation_intensity.replace(",", ".")),
+            "mutation_intensity_final": float(mutation_intensity_final.replace(",", ".")),
             "elitism": float(elite_percent.replace(",", ".")),
             "fitness_remapping": fitness_remapping
         }
@@ -293,7 +303,6 @@ class InputsLayout(QFormLayout):
         return options
 
     def cb_similarity_signal(self):
-        print("ee")
         if self.inp_similarity_cb.isChecked():
             self.inp_similarity.setEnabled(True)
             self.inp_similarity.setStyleSheet("")
@@ -302,7 +311,6 @@ class InputsLayout(QFormLayout):
             self.inp_similarity.setStyleSheet("background:#555")
 
     def cb_best_result_signal(self):
-        print("Alo")
         if self.inp_best_result_cb.isChecked():
             self.inp_best_result.setEnabled(True)
             self.inp_best_result.setStyleSheet("")

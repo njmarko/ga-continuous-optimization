@@ -73,23 +73,20 @@ class Individual(object):
     # -----------
 
     # lower_bound je devijacija u gausu
-    def mutation(self, mutation_rate=2, method="Gauss"):
+    def mutation(self, method="Gauss", mutate_intensity=1):
+        print(mutate_intensity)
         new_mutated = Individual(self.get_num_of_genes(), self.get_lower_bond(), self.get_upper_bond(),
                                  self.get_genes()[:])
 
-        gene_len = self.gene_length()
-        if mutation_rate > gene_len:
-            mutation_rate = gene_len
-        rand_id = sample(range(0, gene_len), mutation_rate)
         if method == "Gauss":
-            for i in rand_id:
+            for i in range(self.get_num_of_genes()):
                 new_mutated._genes[i] = \
-                    self._genes[i] + gauss(0, 1)
+                    self._genes[i] + gauss(0, mutate_intensity)
 
         elif method == "Random":
             lower_bound = self.get_lower_bond()
             upper_bound = self.get_upper_bond()
-            for i in rand_id:
+            for i in range(self.get_num_of_genes()):
                 new_mutated._genes[i] = random() * (upper_bound - lower_bound) + lower_bound
 
         return new_mutated
@@ -203,7 +200,7 @@ class Individual(object):
     def crossover_heuristic(self, other, param1):
         ind1 = self.get_genes()
         ind2 = other.get_genes()
-        if self.get_fitness() < other.get_fitness():
+        if self.get_fitness() > other.get_fitness():
             ind1, ind2 = ind2, ind1
         ratio1 = param1 * random()
         ratio2 = param1 * random()
