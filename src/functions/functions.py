@@ -1,3 +1,7 @@
+"""
+Authors: Marko Njegomir sw-38-2018
+         Milos Popovic  sw-24-2018
+"""
 from math import sqrt, exp, sin, cos, pi, pow
 
 

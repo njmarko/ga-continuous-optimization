@@ -1,3 +1,7 @@
+"""
+Authors: Marko Njegomir sw-38-2018
+         Milos Popovic  sw-24-2018
+"""
 # from PyQt5.QtWidgets import QComboBox
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
@@ -91,7 +95,7 @@ class InputsLayout(QFormLayout):
         radio_box.addWidget(self.inp_extrema_max)
         self.addRow("Function:", self.inp_functions_combo)
         self.inp_num_variables.setMaximum(10000)
-        self.inp_num_variables.setValue(2)
+        self.inp_num_variables.setValue(10)
         self.addRow("Number of variables:", self.inp_num_variables)
         self.addRow("Find:", radio_box)
         self.addRow(QHLine())

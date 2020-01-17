@@ -1,3 +1,7 @@
+"""
+Authors: Marko Njegomir sw-38-2018
+         Milos Popovic  sw-24-2018
+"""
 from random import random, randint, gauss, sample
 
 from src.functions.functions import ackley, griewank, michalewicz

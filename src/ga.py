@@ -1,5 +1,10 @@
+"""
+Authors: Marko Njegomir sw-38-2018
+         Milos Popovic sw-24-2018
+"""
 from src.model.population2 import Population
 from matplotlib import pyplot
+
 ga_function = None
 
 
@@ -113,7 +118,11 @@ def ga(fnc, axis=2, options=None, callback=None):
         callback.set_comment(comment)
         callback.print_result(result, opt["find_max"])
     x = [i for i in range(len(best_results))]
-    pyplot.plot(x,best_results)
+    pyplot.plot(x, best_results)
+    pyplot.title("Best Fitness")
+    pyplot.xlabel("Generation")
+    pyplot.ylabel("Fitness Value")
+
     pyplot.show()
     return result
 

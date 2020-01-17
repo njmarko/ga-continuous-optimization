@@ -1,3 +1,8 @@
+"""
+Authors: Marko Njegomir sw-38-2018
+         Milos Popovic  sw-24-2018
+"""
+
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QApplication, QTextEdit, QWidget, QLabel, QVBoxLayout, QProgressBar, \
