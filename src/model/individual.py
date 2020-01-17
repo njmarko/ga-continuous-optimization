@@ -199,16 +199,21 @@ class Individual(object):
     def crossover_heuristic(self, other, param1):
         ind1 = self.get_genes()
         ind2 = other.get_genes()
-        if self.get_fitness() > other.get_fitness():
+        if self.get_fitness() < other.get_fitness():
             ind1, ind2 = ind2, ind1
-        ratio1 = param1 * random()
-        ratio2 = param1 * random()
+
+        ratio1 = []
+        ratio2 = []
+
+        for i in range(self.get_num_of_genes()):
+            ratio1.append(random() * param1)
+            ratio2.append(random() * param1)
 
         genes1 = []
         genes2 = []
         for i in range(self.get_num_of_genes()):
-            genes1.append(ind1[i] + ratio1 * (ind2[i] - ind1[i]))
-            genes2.append(ind1[i] + ratio2 * (ind2[i] - ind1[i]))
+            genes1.append(ind1[i] + ratio1[i] * (ind2[i] - ind1[i]))
+            genes2.append(ind1[i] + ratio2[i] * (ind2[i] - ind1[i]))
         return genes1, genes2
 
     def __str__(self):

@@ -101,7 +101,7 @@ class InputsLayout(QFormLayout):
         self.header_general.setText("General")
 
         self.inp_pop_size.setMaximum(10000)
-        self.inp_pop_size.setValue(200)
+        self.inp_pop_size.setValue(300)
         self.inp_lower_bound.setMaximum(1000000)
         self.inp_lower_bound.setMinimum(-1000000.0)
         self.inp_lower_bound.setValue(-10)
@@ -137,7 +137,7 @@ class InputsLayout(QFormLayout):
         self.inp_average_result.setMinimum(-100000)
         self.inp_average_result.setMaximum(100000)
 
-        self.inp_max_iter.setValue(200)
+        self.inp_max_iter.setValue(500)
         self.inp_similarity.setValue(60)
         # TODO: Checkbox for NONE value
         self.inp_best_result.setValue(-10)
@@ -171,10 +171,10 @@ class InputsLayout(QFormLayout):
         self.header_selection.setFont(self.medium_font)
         self.header_selection.setText("Selection")
 
-        self.inp_selection_method.addItem("Roulette Wheel", "Roulette Wheel")
         self.inp_selection_method.addItem("Fittest Half", "Fittest Half")
+        self.inp_selection_method.addItem("Roulette Wheel", "Roulette Wheel")
         self.inp_selection_method.addItem("Random", "Random")
-        self.inp_selection_method.addItem("No Selection", "No Selection")
+        self.inp_selection_method.addItem("Whole Population", "Whole Population")
         self.inp_elitism.setMaximum(1)
         self.inp_elitism.setValue(0.05)
         self.inp_elitism.setSingleStep(0.01)
@@ -202,18 +202,16 @@ class InputsLayout(QFormLayout):
 
         self.inp_crossover_method.addItem("Intermediate", "Intermediate")
         self.inp_crossover_method.addItem("Line Intermediate", "Line Intermediate")
+        self.inp_crossover_method.addItem("Heuristic", "Heuristic")
         self.inp_crossover_method.addItem("One point", "One point")
         self.inp_crossover_method.addItem("Two point", "Two point")
-
-        # TODO: Heuristic
-        self.inp_crossover_method.addItem("Heuristic", "Heuristic")
         self.inp_crossover_method.addItem("Random", "Random")
         self.inp_mutation_method.setCurrentIndex(2)
         self.inp_crossover_fraction.setMaximum(1)
-        self.inp_crossover_fraction.setValue(0.8)
+        self.inp_crossover_fraction.setValue(0.7)
         self.inp_crossover_fraction.setSingleStep(0.05)
         self.intermediate_offset.setMaximum(20)
-        self.intermediate_offset.setValue(0.5)
+        self.intermediate_offset.setValue(1.45)
         self.intermediate_offset.setSingleStep(0.05)
 
         self.addRow(self.header_crossover)
@@ -277,7 +275,7 @@ class InputsLayout(QFormLayout):
             "lower_bound": float(low_bound.replace(",", ".")),
             "upper_bound": float(upp_bound.replace(",", ".")),
             "find_max": extrem,
-            "prints": 1,
+            "prints": 0,
             "average_result": float(average_res.replace(",", ".")),
             "best_result": float(best_res.replace(",", ".")),
             "similarity": float(sim_results.replace(",", ".")),

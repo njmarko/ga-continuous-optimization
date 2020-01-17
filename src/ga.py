@@ -1,5 +1,5 @@
 from src.model.population2 import Population
-
+from matplotlib import pyplot
 ga_function = None
 
 
@@ -61,7 +61,7 @@ def ga(fnc, axis=2, options=None, callback=None):
     pop = Population(pop_size, axis, lower_bound, upper_bound, fnc)
     if options["prints"] == 1:
         print(pop)
-
+    best_results = []
     stop = False
     for i in range(max_iter):
         best.append(pop.get_min())
@@ -91,10 +91,7 @@ def ga(fnc, axis=2, options=None, callback=None):
                     fitness_remapping=fitness_remapping)
         pop.mutations(mutation, mutate_intensity=mutate_intensity)
         pop = pop.finalize()
-        # pop = pop.selection(selection, elitism)
-        # pop.pairing(pairing, crossover_fraction, crossover, elitism)
-        # pop.mutations(mutate_fraction, mutation, elitism)
-
+        best_results.append(pop.get_individuals()[0].get_fitness())
         if callback:
             percentage = i / max_iter * 100
             callback.update_progress_bar(i, percentage + 1)
@@ -115,7 +112,9 @@ def ga(fnc, axis=2, options=None, callback=None):
     if callback:
         callback.set_comment(comment)
         callback.print_result(result, opt["find_max"])
-
+    x = [i for i in range(len(best_results))]
+    pyplot.plot(x,best_results)
+    pyplot.show()
     return result
 
 

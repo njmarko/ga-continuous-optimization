@@ -2,7 +2,7 @@ from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QApplication, QTextEdit, QWidget, QLabel, QVBoxLayout, QProgressBar, \
     QPushButton
-
+from matplotlib import pyplot
 from src.ga import ga
 
 
@@ -68,6 +68,7 @@ class OutputLayout(QGridLayout):
 
         res = ga(function, int(num_var), options, controller)
         # self.ga_result.emit(str(res))  # emits a string representation of the best individual
+
 
     def set_progress_bar(self, value):
         self.progress.setValue(value)

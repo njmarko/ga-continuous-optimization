@@ -92,8 +92,6 @@ class Population(object):
         self.sort_individuals()
         num = ceil(elite_count * self.get_pop_size())  # at least one is elite
         for i in range(num):
-            # self._elites.append(self._individuals.pop(0))
-            # self._fitness.pop(0)
             self._elites.append(self._individuals[i])
 
         return self._elites
@@ -174,16 +172,16 @@ class Population(object):
             chosen = self._individuals[len(self._elites):self.get_pop_size() // 2 + len(self._elites)]
         elif method == 'Random':
             for i in range(self.get_pop_size() - len(self._elites)):
-                position = randint(len(self._elites), self.get_pop_size())
+                position = randint(len(self._elites), self.get_pop_size() - 1)
                 chosen.append(self._individuals[position])
-        elif method == 'No Selection':
+        elif method == "Whole Population":
             for i in range(len(self._elites), self.get_pop_size()):
                 chosen.append(self._individuals[i])
         self._parents = chosen
         return chosen
 
-    def pairing(self, method='Random',  crossover_fraction=0.8, crossover="Two point",
-                intermediate_offset=0.2,fitness_remapping="Rank Scaling"):
+    def pairing(self, method='Random', crossover_fraction=0.8, crossover="Two point",
+                intermediate_offset=0.2, fitness_remapping="Rank Scaling"):
 
         parents = self._elites + self._parents
         max_num = crossover_fraction * self._num_individuals
@@ -223,15 +221,17 @@ class Population(object):
 
     def mutations(self, method='Gauss', mutate_intensity=1):
 
-        fraction = 1
         max_iter = self._num_individuals - len(self._children) - len(self._elites)
         mutated = []
-        num = ceil(fraction * len(self._parents))
+        num = ceil(len(self._parents))
         positions = sample(range(0, len(self._parents)), num)
-        for i in range(max_iter):
+        i = 0
+        while len(mutated) < max_iter:
             self._parents[positions[i]].mutation(method=method, mutate_intensity=mutate_intensity)
             mutated.append(self._parents[positions[i]])
-
+            i += 1
+            if i >= len(positions):
+                i = 0
         self._mutated = mutated
         return mutated
 
