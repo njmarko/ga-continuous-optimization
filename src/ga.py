@@ -118,12 +118,15 @@ def ga(fnc, axis=2, options=None, callback=None):
         callback.set_comment(comment)
         callback.print_result(result, opt["find_max"])
     x = [i for i in range(len(best_results))]
+
+    #  CODE FOR PLOTTING: remove this code if there is a problem with running the program
     pyplot.plot(x, best_results)
     pyplot.title("Best Fitness")
     pyplot.xlabel("Generation")
     pyplot.ylabel("Fitness Value")
-
     pyplot.show()
+    # END of plotting
+
     return result
 
 

@@ -76,7 +76,6 @@ class Individual(object):
 
     # -----------
 
-    # lower_bound je devijacija u gausu
     def mutation(self, method="Gauss", mutate_intensity=1):
         new_mutated = Individual(self.get_num_of_genes(), self.get_lower_bond(), self.get_upper_bond(),
                                  self.get_genes()[:])

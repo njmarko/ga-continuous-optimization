@@ -24,7 +24,6 @@ class MainWindow(QMainWindow):
                            "QScrollBar:horizontal { border: none; background: #383838; height: 10px; }"
                            "QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal { border: none;"
                            "width: 3px; height: 3px; background: #222; }")
-        # self.actionManager = QApplication.instance().actionManager
 
         self.setDocumentMode(False)
         self.setMinimumSize(500, 400)

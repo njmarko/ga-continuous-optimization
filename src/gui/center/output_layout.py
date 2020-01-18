@@ -71,9 +71,7 @@ class OutputLayout(QGridLayout):
         function = options["function"]
         num_var = options["num_var"]
 
-        res = ga(function, int(num_var), options, controller)
-        # self.ga_result.emit(str(res))  # emits a string representation of the best individual
-
+        ga(function, int(num_var), options, controller)
 
     def set_progress_bar(self, value):
         self.progress.setValue(value)

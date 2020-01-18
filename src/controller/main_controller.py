@@ -4,6 +4,7 @@ Authors: Marko Njegomir sw-38-2018
 """
 from PySide2.QtCore import QObject
 
+
 class MainController(QObject):
     def __init__(self, app):
         super().__init__()
@@ -17,9 +18,9 @@ class MainController(QObject):
         fitness = best.get_fitness()
         if maxf:
             fitness *= -1
-        # out = "Iteration " + str(i) + "| Fitness: " + str(fitness) + " Axis: [" + str(best.get_genes())
+
         out = "Iteration {:<4} | Fitness: {:<30} Axis: {}".format(i, fitness, str(best.get_genes()))
-        # self.output_layout.clear_console()
+
         self.output_layout.append_output(out)
 
     def clear_console(self, value):

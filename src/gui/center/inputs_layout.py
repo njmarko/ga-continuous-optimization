@@ -89,7 +89,6 @@ class InputsLayout(QFormLayout):
 
         self.inp_extrema_min.setChecked(True)
 
-        # Is it okay to create object in function?
         radio_box = QHBoxLayout()
         radio_box.addWidget(self.inp_extrema_min)
         radio_box.addWidget(self.inp_extrema_max)
@@ -142,8 +141,7 @@ class InputsLayout(QFormLayout):
         self.inp_average_result.setMaximum(100000)
 
         self.inp_max_iter.setValue(500)
-        self.inp_similarity.setValue(60)
-        # TODO: Checkbox for NONE value
+        self.inp_similarity.setValue(80)
         self.inp_best_result.setValue(-10)
         self.inp_average_result.setValue(-10000)
 
@@ -154,7 +152,7 @@ class InputsLayout(QFormLayout):
         self.inp_best_result_cb.stateChanged.connect(self.cb_best_result_signal)
         self.inp_average_result_cb.stateChanged.connect(self.cb_average_result_signal)
 
-        self.inp_similarity_cb.setChecked(True)
+        self.inp_similarity_cb.setChecked(False)
         self.inp_best_result_cb.setChecked(False)
         self.inp_average_result_cb.setChecked(False)
 
@@ -180,7 +178,7 @@ class InputsLayout(QFormLayout):
         self.inp_selection_method.addItem("Random", "Random")
         self.inp_selection_method.addItem("Whole Population", "Whole Population")
         self.inp_elitism.setMaximum(1)
-        self.inp_elitism.setValue(0.05)
+        self.inp_elitism.setValue(0.01)
         self.inp_elitism.setSingleStep(0.01)
 
         self.addRow(self.header_selection)
@@ -192,9 +190,10 @@ class InputsLayout(QFormLayout):
         self.header_pairing.setFont(self.medium_font)
         self.header_pairing.setText("Pairing")
 
+        self.inp_pairing_method.addItem("Random", "Random")
         self.inp_pairing_method.addItem("Roulette Wheel", "Roulette Wheel")
         self.inp_pairing_method.addItem("Fittest", "Fittest")
-        self.inp_pairing_method.addItem("Random", "Random")
+
 
         self.addRow(self.header_pairing)
         self.addRow("Pairing Method", self.inp_pairing_method)
@@ -215,7 +214,7 @@ class InputsLayout(QFormLayout):
         self.inp_crossover_fraction.setValue(0.7)
         self.inp_crossover_fraction.setSingleStep(0.05)
         self.intermediate_offset.setMaximum(20)
-        self.intermediate_offset.setValue(1.45)
+        self.intermediate_offset.setValue(1.55)
         self.intermediate_offset.setSingleStep(0.05)
 
         self.addRow(self.header_crossover)
@@ -231,7 +230,7 @@ class InputsLayout(QFormLayout):
         self.inp_mutation_method.addItem("Gauss", "Gauss")
         self.inp_mutation_method.addItem("Random", "Random")
         self.inp_mutation_intensity.setMaximum(200)
-        self.inp_mutation_intensity.setValue(1)
+        self.inp_mutation_intensity.setValue(2)
         self.inp_mutation_intensity.setDecimals(4)
 
         self.inp_mutation_intensity.setSingleStep(0.01)
