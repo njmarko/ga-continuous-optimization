@@ -68,6 +68,20 @@ def ga(fnc, axis=2, options=None, callback=None):
         print(pop)
     best_results = []
     stop = False
+    x = []
+
+    interval = max_iter * 0.02  # % of iterations are that are drawn
+    ylow, yhigh = 0, 0
+    if fnc.__name__ == "michalewicz":
+        ylow = -10
+        yhigh = 0
+    elif fnc.__name__ == "ackley":
+        ylow = 0
+        yhigh = 8
+    elif fnc.__name__ == "griewank":
+        ylow = 0
+        yhigh = 1
+
     for i in range(max_iter):
         best.append(pop.get_min())
 
@@ -97,6 +111,16 @@ def ga(fnc, axis=2, options=None, callback=None):
         pop.mutations(mutation, mutate_intensity=mutate_intensity)
         pop = pop.finalize()
         best_results.append(pop.get_individuals()[0].get_fitness())
+        x.append(i)
+
+        if i % interval == 0:
+            # pyplot.clf() # if i want to clear the graph every time
+            pyplot.xlim(0, max_iter)
+            if ylow != yhigh:
+                pyplot.ylim(ylow, yhigh)  # remove this line if you want automatic scaling of y axiss
+            pyplot.plot(x, best_results, "blue")
+            pyplot.pause(0.00000000001)
+
         if callback:
             percentage = i / max_iter * 100
             callback.update_progress_bar(i, percentage + 1)
